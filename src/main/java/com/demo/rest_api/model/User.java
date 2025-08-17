@@ -2,32 +2,43 @@ package com.demo.rest_api.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "user")
+@Document( collection = "user" )
 public class User
 {
-    private String name = "";
-    private String gender = "";
-    private String message = "";
+    private String id;
+    private String username;
+    private String password;
+    private int score;
 
-    public User( String name, String gender, String message )
+    public User( String username, String password )
     {
-        this.name = name;
-        this.gender = gender;
-        this.message = message;
+        this.username = username;
+        this.password = password;
+        this.score = 0;
     }
 
-    public String getName()
+    public void setPassword( String password )
     {
-        return name;
+        this.password = password;
     }
 
-    public String getGender()
+    public String getId()
     {
-        return gender;
+        return this.id;
     }
 
-    public String getMessage()
+    public String getUsername()
     {
-        return message;
+        return this.username;
+    }
+
+    public String getPassword()
+    {
+        return this.password;
+    }
+
+    public int getScore()
+    {
+        return this.score;
     }
 }
