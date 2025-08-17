@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping( "/users" )
+@RequestMapping( "/api/users" )
 public class UserController
 {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping( "/createUser" )
+    @RequestMapping( value = "/createUser", method = RequestMethod.POST )
     public ResponseEntity<?> createUser(@RequestBody User user )
     {
         if (StringHelper.isNullOrEmpty( user.getName() ))
@@ -63,7 +63,7 @@ public class UserController
                 );
     }
 
-    @GetMapping
+    @RequestMapping( method = RequestMethod.GET )
     public ResponseEntity<?> getUsers()
     {
         List<User> users = userRepository.findAll();
