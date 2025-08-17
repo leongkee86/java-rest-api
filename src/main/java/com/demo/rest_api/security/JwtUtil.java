@@ -13,10 +13,10 @@ public class JwtUtil
     @Value( "${JWT_SECRET_KEY}" )
     private String secretKey;
 
-    public String generateToken( String email )
+    public String generateToken( String subject )
     {
         return Jwts.builder()
-                .setSubject( email )
+                .setSubject( subject )
                 .setIssuedAt( new Date() )
                 .setExpiration( new Date(System.currentTimeMillis() + 86400000 ) ) // 1 day
                 .signWith( SignatureAlgorithm.HS256, secretKey )

@@ -10,6 +10,8 @@ import com.demo.rest_api.security.JwtUtil;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.StringHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,19 +25,32 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@Tag( name = "Auth" )
 @RequestMapping( "/api/auth" )
 public class AuthController
 {
     @Autowired
-    private UserService userService;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
 
     @PostMapping( "/register" )
+    @Operation(
+        summary = "Registers a new user account.",
+        description = """
+            Registers a new user account.
+            
+            ### Request body must include:
+            - `username` (unique)
+            - `password`
+            
+            > Once registered successfully, you can log in using the `/api/auth/login` endpoint to receive a JWT token.
+            """
+    )
     public ResponseEntity<?> register( @RequestBody RegisterRequest request )
     {
         if (StringHelper.isNullOrEmpty( request.getUsername() ))
@@ -96,6 +111,20 @@ public class AuthController
     }
 
     @PostMapping( "/login" )
+    @Operation(
+        summary = "Log in to an existing user account.",
+        description = """
+            Authenticates a user with username and password.
+            
+            On success, returns a JWT access token in the `token` field.
+            
+            ### How to use the token in Swagger UI:
+            1. Copy the `token` from the response.
+            2. Click the **Authorize** button (top right in Swagger UI).
+            3. Paste the token into the `value` input field.
+            4. Click **Authorize** — now your requests will include the token.
+            """
+    )
     public ResponseEntity<?> login( @RequestBody LoginRequest request )
     {
         Optional<User> userOpt = userService.findByUsername( request.getUsername() );

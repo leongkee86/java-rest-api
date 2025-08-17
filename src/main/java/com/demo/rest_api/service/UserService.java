@@ -23,7 +23,12 @@ public class UserService
 
     public User save( User user )
     {
-        user.setPassword( passwordEncoder.encode( user.getPassword() ) );
+        if (!user.getIsPasswordEncoded())
+        {
+            user.setPassword( passwordEncoder.encode( user.getPassword() ) );
+            user.setIsPasswordEncoded( true );
+        }
+
         return userRepository.save( user );
     }
 
