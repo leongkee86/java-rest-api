@@ -1,5 +1,8 @@
 package com.demo.rest_api.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "user")
 public class User
 {
     private String name = "";

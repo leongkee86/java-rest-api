@@ -1,23 +1,25 @@
 package com.demo.rest_api.controller;
 
 import com.demo.rest_api.model.User;
+import com.demo.rest_api.repository.UserRepository;
 import com.demo.rest_api.response.ApiResponse;
 import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.StringHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping( "/users" )
 public class UserController
 {
-    private final List<User> users = new ArrayList<User>();
+    @Autowired
+    private UserRepository userRepository;
 
-    @PostMapping( "/users" )
+    @PostMapping( "/createUser" )
     public ResponseEntity<?> createUser(@RequestBody User user )
     {
         if (StringHelper.isNullOrEmpty( user.getName() ))
@@ -47,14 +49,15 @@ public class UserController
                     );
         }
 
-        users.add( user );
+        User savedUser = userRepository.save( user );
+
         return ResponseEntity
                 .status( HttpStatus.CREATED )
                 .body(
                     new ApiResponse<>(
                         HttpStatus.CREATED.value(),
                         Constants.DEFAULT_SUCCESS_MESSAGE,
-                        user,
+                        savedUser,
                         null
                     )
                 );
@@ -63,6 +66,8 @@ public class UserController
     @GetMapping
     public ResponseEntity<?> getUsers()
     {
+        List<User> users = userRepository.findAll();
+
         return ResponseEntity
                 .status( HttpStatus.OK )
                 .body(
