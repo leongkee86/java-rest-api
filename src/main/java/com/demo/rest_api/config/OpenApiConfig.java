@@ -16,7 +16,7 @@ import java.util.List;
     info = @Info(
                 title = "Server APIs (Java + MongoDB)",
                 version = "0.0.1",
-                description = "Hi. I am Lim Leong Kee. I have developed these server APIs using Java, with MongoDB as the database. Feel free to explore and interact with them via this Swagger UI. I would greatly appreciate any feedback or suggestions you may have. Thank you.",
+                description = "Hi. I am Lim Leong Kee.<br>I have developed the entire set of server-side APIs using Java, with MongoDB as the underlying database. These APIs are fully documented and available for exploration and interaction via this page.<br>I would sincerely appreciate any feedback, suggestions or improvements you might have. Thank you for taking the time to review my work.",
                 contact = @io.swagger.v3.oas.annotations.info.Contact(
                     name = "Lim Leong Kee",
                     email = "leongkee86@gmail.com"
