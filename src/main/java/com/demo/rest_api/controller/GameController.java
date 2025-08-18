@@ -42,9 +42,6 @@ public class GameController
     @Autowired
     private LeaderboardService leaderboardService;
 
-    private boolean hasGameStarted = false;
-    private int currentNumber = 0;
-
     private ResponseEntity<?> getAuthenticatedUserOrError()
     {
         // At this point, Spring Security should have already set the authenticated user.
@@ -159,10 +156,8 @@ public class GameController
                     );
         }
 
-        if (!hasGameStarted)
+        if (user.getCurrentNumber() == 0)
         {
-            hasGameStarted = true;
-
             if (user.getRounds() < 1)
             {
                 user.setRounds( 1 );
@@ -172,12 +167,14 @@ public class GameController
                 user.setRounds( user.getRounds() + 1 );
             }
 
-            currentNumber = NumberHelper.getRandomNumber( 1, 100 );
+            user.setCurrentNumber( NumberHelper.getRandomNumber( 1, 100 ) );
         }
 
         user.setAttempts( user.getAttempts() + 1 );
 
         String roundNumberString = "[ ROUND " + user.getRounds() + " ] ";
+
+        int currentNumber = user.getCurrentNumber();
 
         if (number > currentNumber)
         {
@@ -211,7 +208,7 @@ public class GameController
                     );
         }
 
-        hasGameStarted = false;
+        user.setCurrentNumber( 0 );
         user.setScore( user.getScore() + 1 );
         userService.save( user );
 

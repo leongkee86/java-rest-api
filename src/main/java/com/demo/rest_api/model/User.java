@@ -13,6 +13,8 @@ public class User
     private int attempts = 0;
     private int rounds = 0;
 
+    private int currentNumber = 0;
+
     public User( String username, String password )
     {
         this.username = username;
@@ -90,5 +92,15 @@ public class User
         }
 
         return ( float )attempts / user.getRounds();
+    }
+
+    public int getCurrentNumber()
+    {
+        return currentNumber;
+    }
+
+    public void setCurrentNumber( int currentNumber )
+    {
+        this.currentNumber = currentNumber;
     }
 }
