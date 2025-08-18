@@ -2,7 +2,7 @@ package com.demo.rest_api.controller;
 
 import com.demo.rest_api.dto.ApiResponse;
 import com.demo.rest_api.dto.LeaderboardUserResponse;
-import com.demo.rest_api.dto.PlayRequest;
+import com.demo.rest_api.dto.GuessNumberRequest;
 import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
@@ -141,7 +141,7 @@ public class GameController
             schema = @Schema( implementation = ErrorResponse.class )
         )
     )
-    public ResponseEntity<?> guessNumber( @Valid @RequestBody PlayRequest request )
+    public ResponseEntity<?> guessNumber( @Valid @RequestBody GuessNumberRequest request )
     {
         ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
 
