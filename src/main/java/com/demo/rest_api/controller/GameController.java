@@ -122,7 +122,16 @@ public class GameController
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         summary = "Start a new round or continue the current round to play the game.",
-        description = "Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result."
+        description = """
+            Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result.
+            
+            ### In each round, there are 3 hidden numbers.
+            - **Basic Number**: Gives a hint after each wrong guess. If correctly guessed, awards +1 point and complete the round.
+            - **Secret Number**: No hints provided. If correctly guessed, awards +3 points and complete the round.
+            - **Trap Number**: No hints provided. If unfortunately guessed, lose 1 point but the round continues.
+            
+            > Your goal is to guess either the Basic Number or Secret Number to complete the round — but beware of the Trap Number!
+            """
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "401",
@@ -157,27 +166,71 @@ public class GameController
                     );
         }
 
-        if (user.getCurrentNumber() == 0)
+        if (!user.getHasGuessNumberStarted())
         {
-            if (user.getRounds() < 1)
+            user.setHasGuessNumberStarted( true );
+
+            if (user.getGuessNumberCurrentRound() < 1)
             {
-                user.setRounds( 1 );
+                user.setGuessNumberCurrentRound( 1 );
             }
             else
             {
-                user.setRounds( user.getRounds() + 1 );
+                user.setGuessNumberCurrentRound( user.getGuessNumberCurrentRound() + 1 );
             }
 
-            user.setCurrentNumber( NumberHelper.getRandomNumber( 1, 100 ) );
+            int[] randomNumbers = NumberHelper.generateDistinctRandomNumbersInRange( 1, 100, 3 );
+
+            user.setGuessNumberBasic( randomNumbers[ 0 ] );
+            user.setGuessNumberSecret( randomNumbers[ 1 ] );
+            user.setGuessNumberTrap( randomNumbers[ 2 ] );
         }
 
         user.setAttempts( user.getAttempts() + 1 );
 
-        String roundNumberString = "[ ROUND " + user.getRounds() + " ] ";
+        String roundNumberString = "[ ROUND " + user.getGuessNumberCurrentRound() + " ] ";
 
-        int currentNumber = user.getCurrentNumber();
+        int basicNumber = user.getGuessNumberBasic();
+        int secretNumber = user.getGuessNumberSecret();
+        int trapNumber = user.getGuessNumberTrap();
 
-        if (number > currentNumber)
+        if (number == secretNumber)
+        {
+            user.setHasGuessNumberStarted( false );
+            user.setScore( user.getScore() + 3 );
+            userService.save( user );
+
+            return ResponseEntity
+                    .status( HttpStatus.OK )
+                    .body(
+                        new ApiResponse<>(
+                            HttpStatus.OK.value(),
+                            roundNumberString + "Congratulations!!! You have correctly guessed the SECRET number (" + number + ") and earned 3 points! Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                            new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
+                            null
+                        )
+                    );
+        }
+
+        if (number == trapNumber)
+        {
+            user.setGuessNumberTrap( 0 );
+            user.setScore( user.getScore() - 1 );
+            userService.save( user );
+
+            return ResponseEntity
+                    .status( HttpStatus.OK )
+                    .body(
+                        new ApiResponse<>(
+                            HttpStatus.OK.value(),
+                            roundNumberString + "You have unfortunately guessed the TRAP number (" + number + ") and lost 1 point... Your current score is " + user.getScore() + ". Use this endpoint to continue guessing the BASIC or SECRET number.",
+                            new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
+                            null
+                        )
+                    );
+        }
+
+        if (number > basicNumber)
         {
             userService.save( user );
 
@@ -186,14 +239,14 @@ public class GameController
                     .body(
                         new ApiResponse<>(
                             HttpStatus.OK.value(),
-                                roundNumberString + "Your guessed number (" + number + ") is too high! Try again.",
+                            roundNumberString + "Your guessed number (" + number + ") is too high! Try again.",
                             new UserResponse( user ),
                             null
                         )
                     );
         }
 
-        if (number < currentNumber)
+        if (number < basicNumber)
         {
             userService.save( user );
 
@@ -202,14 +255,14 @@ public class GameController
                     .body(
                         new ApiResponse<>(
                             HttpStatus.OK.value(),
-                                roundNumberString + "Your guessed number (" + number + ") is too low! Try again.",
+                            roundNumberString + "Your guessed number (" + number + ") is too low! Try again.",
                             new UserResponse( user ),
                             null
                         )
                     );
         }
 
-        user.setCurrentNumber( 0 );
+        user.setHasGuessNumberStarted( false );
         user.setScore( user.getScore() + 1 );
         userService.save( user );
 
@@ -218,7 +271,7 @@ public class GameController
                 .body(
                     new ApiResponse<>(
                         HttpStatus.OK.value(),
-                        roundNumberString + "Congratulations! You have guessed the correct number (" + number + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                        roundNumberString + "Congratulations! You have correctly guessed the BASIC number (" + number + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
                         new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
                         null
                     )

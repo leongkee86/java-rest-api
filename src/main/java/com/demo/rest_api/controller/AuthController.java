@@ -87,10 +87,10 @@ public class AuthController
                     .status( HttpStatus.CONFLICT )
                     .body(
                         new ApiResponse<>(
-                                HttpStatus.CONFLICT.value(),
-                                "username already registered",
-                                null,
-                                null
+                            HttpStatus.CONFLICT.value(),
+                            "username already registered",
+                            null,
+                            null
                         )
                     );
         }
@@ -168,12 +168,12 @@ public class AuthController
         return ResponseEntity
                 .status( HttpStatus.OK )
                 .body(
-                        new ApiResponse<>(
-                            HttpStatus.OK.value(),
-                            Constants.DEFAULT_SUCCESS_MESSAGE,
-                            data,
-                            null
-                        )
+                    new ApiResponse<>(
+                        HttpStatus.OK.value(),
+                        Constants.DEFAULT_SUCCESS_MESSAGE,
+                        data,
+                        null
+                    )
                 );
     }
 }

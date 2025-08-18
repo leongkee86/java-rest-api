@@ -17,7 +17,11 @@ public class User
     private int attempts = 0;
     private int rounds = 0;
 
-    private int currentNumber = 0;
+    private boolean hasGuessNumberStarted = false;
+    private int guessNumberCurrentRound = 0;
+    private int guessNumberBasic = 0;
+    private int guessNumberSecret = 0;
+    private int guessNumberTrap = 0;
 
     public User( String username, String password )
     {
@@ -77,9 +81,9 @@ public class User
         return rounds;
     }
 
-    public void setRounds(int rounds)
+    public void updateRounds()
     {
-        this.rounds = rounds;
+        rounds = guessNumberCurrentRound;
     }
 
     public static float getAverageAttemptsPerRound( User user )
@@ -94,13 +98,54 @@ public class User
         return ( float )attempts / user.getRounds();
     }
 
-    public int getCurrentNumber()
+    public boolean getHasGuessNumberStarted()
     {
-        return currentNumber;
+        return hasGuessNumberStarted;
     }
 
-    public void setCurrentNumber( int currentNumber )
+    public void setHasGuessNumberStarted( boolean hasGuessNumberStarted )
     {
-        this.currentNumber = currentNumber;
+        this.hasGuessNumberStarted = hasGuessNumberStarted;
+    }
+
+    public int getGuessNumberCurrentRound()
+    {
+        return guessNumberCurrentRound;
+    }
+
+    public void setGuessNumberCurrentRound( int guessNumberCurrentRound )
+    {
+        this.guessNumberCurrentRound = guessNumberCurrentRound;
+        updateRounds();
+    }
+
+    public int getGuessNumberBasic()
+    {
+        return guessNumberBasic;
+    }
+
+    public void setGuessNumberBasic( int guessNumberBasic )
+    {
+        this.guessNumberBasic = guessNumberBasic;
+    }
+
+    public int getGuessNumberSecret()
+    {
+        return guessNumberSecret;
+    }
+
+    public void setGuessNumberSecret( int guessNumberSecret )
+    {
+        this.guessNumberSecret = guessNumberSecret;
+    }
+
+    public int getGuessNumberTrap()
+    {
+        return guessNumberTrap;
+    }
+
+    public void setGuessNumberTrap( int guessNumberTrap )
+    {
+        this.guessNumberTrap = guessNumberTrap;
     }
 }
