@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@Tag( name = "Auth" )
 @RequestMapping( "/api/auth" )
+@Tag( name = "Auth" )
 public class AuthController
 {
     @Autowired
@@ -40,9 +40,9 @@ public class AuthController
 
     @PostMapping( "/register" )
     @Operation(
-        summary = "Registers a new user account.",
+        summary = "Registers for a new user account.",
         description = """
-            Registers a new user account.
+            Registers for a new user account.
             
             ### Request body must include:
             - `username` (unique)

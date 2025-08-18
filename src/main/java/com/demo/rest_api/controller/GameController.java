@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@Tag( name = "Game" )
 @RequestMapping( "/api/game" )
+@Tag( name = "Game" )
 public class GameController
 {
     @Autowired
@@ -83,10 +83,10 @@ public class GameController
         return ResponseEntity.ok(userOpt.get());
     }
 
-    @PostMapping( "/profile" )
+    @GetMapping( "/profile" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        summary = "View your profile information.",
+        summary = "View your game profile information.",
         description = ""
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
