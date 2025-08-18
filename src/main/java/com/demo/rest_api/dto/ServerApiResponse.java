@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude( JsonInclude.Include.NON_NULL )
 @JsonPropertyOrder({ "status", "success", "message", "data", "metadata" })
-public class ApiResponse<T>
+public class ServerApiResponse<T>
 {
     private int status;
     private boolean success;
@@ -13,7 +13,7 @@ public class ApiResponse<T>
     private T data;
     private Object metadata;
 
-    public ApiResponse( int status, String message, T data, Object metadata )
+    public ServerApiResponse(int status, String message, T data, Object metadata )
     {
         this.setStatus( status );
         this.setMessage( message );

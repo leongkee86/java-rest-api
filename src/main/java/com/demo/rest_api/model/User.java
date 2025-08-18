@@ -23,6 +23,10 @@ public class User
     private int guessNumberSecret = 0;
     private int guessNumberTrap = 0;
 
+    private boolean hasArrangeNumbersStarted = false;
+    private int arrangeNumbersCurrentRound = 0;
+    private int[] arrangedNumbers = null;
+
     public User( String username, String password )
     {
         this._id = new ObjectId();
@@ -66,24 +70,24 @@ public class User
         return this.score;
     }
 
-    public int getAttempts()
-    {
-        return attempts;
-    }
-
     public void setAttempts( int attempts )
     {
         this.attempts = attempts;
     }
 
-    public int getRounds()
+    public int getAttempts()
     {
-        return rounds;
+        return attempts;
     }
 
     public void updateRounds()
     {
-        rounds = guessNumberCurrentRound;
+        rounds = guessNumberCurrentRound + arrangeNumbersCurrentRound;
+    }
+
+    public int getRounds()
+    {
+        return rounds;
     }
 
     public static float getAverageAttemptsPerRound( User user )
@@ -98,19 +102,14 @@ public class User
         return ( float )attempts / user.getRounds();
     }
 
-    public boolean getHasGuessNumberStarted()
-    {
-        return hasGuessNumberStarted;
-    }
-
     public void setHasGuessNumberStarted( boolean hasGuessNumberStarted )
     {
         this.hasGuessNumberStarted = hasGuessNumberStarted;
     }
 
-    public int getGuessNumberCurrentRound()
+    public boolean getHasGuessNumberStarted()
     {
-        return guessNumberCurrentRound;
+        return hasGuessNumberStarted;
     }
 
     public void setGuessNumberCurrentRound( int guessNumberCurrentRound )
@@ -119,9 +118,9 @@ public class User
         updateRounds();
     }
 
-    public int getGuessNumberBasic()
+    public int getGuessNumberCurrentRound()
     {
-        return guessNumberBasic;
+        return guessNumberCurrentRound;
     }
 
     public void setGuessNumberBasic( int guessNumberBasic )
@@ -129,9 +128,9 @@ public class User
         this.guessNumberBasic = guessNumberBasic;
     }
 
-    public int getGuessNumberSecret()
+    public int getGuessNumberBasic()
     {
-        return guessNumberSecret;
+        return guessNumberBasic;
     }
 
     public void setGuessNumberSecret( int guessNumberSecret )
@@ -139,13 +138,49 @@ public class User
         this.guessNumberSecret = guessNumberSecret;
     }
 
-    public int getGuessNumberTrap()
+    public int getGuessNumberSecret()
     {
-        return guessNumberTrap;
+        return guessNumberSecret;
     }
 
     public void setGuessNumberTrap( int guessNumberTrap )
     {
         this.guessNumberTrap = guessNumberTrap;
+    }
+
+    public int getGuessNumberTrap()
+    {
+        return guessNumberTrap;
+    }
+
+    public void setHasArrangeNumbersStarted( boolean hasArrangeNumbersStarted )
+    {
+        this.hasArrangeNumbersStarted = hasArrangeNumbersStarted;
+    }
+
+    public boolean getHasArrangeNumbersStarted()
+    {
+        return hasArrangeNumbersStarted;
+    }
+
+    public void setArrangeNumbersCurrentRound( int arrangeNumbersCurrentRound )
+    {
+        this.arrangeNumbersCurrentRound = arrangeNumbersCurrentRound;
+        updateRounds();
+    }
+
+    public int getArrangeNumbersCurrentRound()
+    {
+        return arrangeNumbersCurrentRound;
+    }
+
+    public void setArrangedNumbers( int[] arrangedNumbers )
+    {
+        this.arrangedNumbers = arrangedNumbers;
+    }
+
+    public int[] getArrangedNumbers()
+    {
+        return arrangedNumbers;
     }
 }

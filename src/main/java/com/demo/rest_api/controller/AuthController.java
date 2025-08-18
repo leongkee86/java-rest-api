@@ -5,7 +5,7 @@ import com.demo.rest_api.dto.RegisterRequest;
 import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
-import com.demo.rest_api.dto.ApiResponse;
+import com.demo.rest_api.dto.ServerApiResponse;
 import com.demo.rest_api.security.JwtUtil;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
@@ -58,7 +58,7 @@ public class AuthController
             return ResponseEntity
                     .status( HttpStatus.BAD_REQUEST )
                     .body(
-                        new ApiResponse<>(
+                        new ServerApiResponse<>(
                             HttpStatus.BAD_REQUEST.value(),
                             "username is required",
                             null,
@@ -72,7 +72,7 @@ public class AuthController
             return ResponseEntity
                     .status( HttpStatus.BAD_REQUEST )
                     .body(
-                        new ApiResponse<>(
+                        new ServerApiResponse<>(
                             HttpStatus.BAD_REQUEST.value(),
                             "password is required",
                             null,
@@ -86,7 +86,7 @@ public class AuthController
             return ResponseEntity
                     .status( HttpStatus.CONFLICT )
                     .body(
-                        new ApiResponse<>(
+                        new ServerApiResponse<>(
                             HttpStatus.CONFLICT.value(),
                             "username already registered",
                             null,
@@ -101,7 +101,7 @@ public class AuthController
         return ResponseEntity
                 .status( HttpStatus.CREATED )
                 .body(
-                    new ApiResponse<>(
+                    new ServerApiResponse<>(
                         HttpStatus.CREATED.value(),
                         Constants.DEFAULT_SUCCESS_MESSAGE,
                         null,
@@ -134,7 +134,7 @@ public class AuthController
             return ResponseEntity
                     .status( HttpStatus.NOT_FOUND )
                     .body(
-                        new ApiResponse<>(
+                        new ServerApiResponse<>(
                             HttpStatus.NOT_FOUND.value(),
                             "username not found",
                             null,
@@ -150,7 +150,7 @@ public class AuthController
             return ResponseEntity
                     .status( HttpStatus.UNAUTHORIZED )
                     .body(
-                        new ApiResponse<>(
+                        new ServerApiResponse<>(
                             HttpStatus.UNAUTHORIZED.value(),
                             "invalid credentials",
                             null,
@@ -168,7 +168,7 @@ public class AuthController
         return ResponseEntity
                 .status( HttpStatus.OK )
                 .body(
-                    new ApiResponse<>(
+                    new ServerApiResponse<>(
                         HttpStatus.OK.value(),
                         Constants.DEFAULT_SUCCESS_MESSAGE,
                         data,
