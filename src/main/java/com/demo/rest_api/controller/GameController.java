@@ -15,12 +15,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping( "/api/game" )
 @Tag( name = "Game" )
+@Validated
 public class GameController
 {
     @Autowired
@@ -162,7 +165,7 @@ public class GameController
             content = @Content
         )
     } )
-    public ResponseEntity<?> guessNumber( @RequestBody @Valid GuessNumberRequest request )
+    public ResponseEntity<?> guessNumber( @RequestParam( defaultValue = "50" ) int yourGuessedNumber )
     {
         ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
 
@@ -171,9 +174,7 @@ public class GameController
             return authenticatedUserOrError;
         }
 
-        int number = request.getYourGuessedNumber();
-
-        if (number < 1 || number > 100)
+        if (yourGuessedNumber < 1 || yourGuessedNumber > 100)
         {
             return ResponseEntity
                     .status( HttpStatus.BAD_REQUEST )
@@ -215,7 +216,7 @@ public class GameController
         int secretNumber = user.getGuessNumberSecret();
         int trapNumber = user.getGuessNumberTrap();
 
-        if (number == secretNumber)
+        if (yourGuessedNumber == secretNumber)
         {
             user.setHasGuessNumberStarted( false );
             user.setScore( user.getScore() + 3 );
@@ -226,14 +227,14 @@ public class GameController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.OK.value(),
-                            roundNumberString + "Congratulations!!! You have correctly guessed the SECRET number (" + number + ") and earned 3 points! Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                            roundNumberString + "Congratulations!!! You have correctly guessed the SECRET number (" + yourGuessedNumber + ") and earned 3 points! Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
                             new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
                             null
                         )
                     );
         }
 
-        if (number == trapNumber)
+        if (yourGuessedNumber == trapNumber)
         {
             user.setGuessNumberTrap( 0 );
             user.setScore( user.getScore() - 1 );
@@ -244,14 +245,14 @@ public class GameController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.OK.value(),
-                            roundNumberString + "You have unfortunately guessed the TRAP number (" + number + ") and lost 1 point... Your current score is " + user.getScore() + ". Use this endpoint to continue guessing the BASIC or SECRET number.",
+                            roundNumberString + "You have unfortunately guessed the TRAP number (" + yourGuessedNumber + ") and lost 1 point... Your current score is " + user.getScore() + ". Use this endpoint to continue guessing the BASIC or SECRET number.",
                             new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
                             null
                         )
                     );
         }
 
-        if (number > basicNumber)
+        if (yourGuessedNumber > basicNumber)
         {
             userService.save( user );
 
@@ -260,14 +261,14 @@ public class GameController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.OK.value(),
-                            roundNumberString + "Your guessed number (" + number + ") is too high! Try again.",
+                            roundNumberString + "Your guessed number (" + yourGuessedNumber + ") is too high! Try again.",
                             new UserResponse( user ),
                             null
                         )
                     );
         }
 
-        if (number < basicNumber)
+        if (yourGuessedNumber < basicNumber)
         {
             userService.save( user );
 
@@ -276,7 +277,7 @@ public class GameController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.OK.value(),
-                            roundNumberString + "Your guessed number (" + number + ") is too low! Try again.",
+                            roundNumberString + "Your guessed number (" + yourGuessedNumber + ") is too low! Try again.",
                             new UserResponse( user ),
                             null
                         )
@@ -292,7 +293,7 @@ public class GameController
                 .body(
                     new ServerApiResponse<>(
                         HttpStatus.OK.value(),
-                        roundNumberString + "Congratulations! You have correctly guessed the BASIC number (" + number + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                        roundNumberString + "Congratulations! You have correctly guessed the BASIC number (" + yourGuessedNumber + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
                         new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
                         null
                     )
@@ -338,7 +339,11 @@ public class GameController
             content = @Content
         )
     } )
-    public ResponseEntity<?> arrangeNumbers( @RequestBody @Valid ArrangeNumberRequest request )
+    public ResponseEntity<?> arrangeNumbers(
+        @RequestParam( defaultValue = "1,2,3,4,5" )
+        @Size( min = 5, max = 5, message = "You must provide exactly 5 numbers" )
+        List<Integer> yourArrangedNumbers
+    )
     {
         ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
 
@@ -347,9 +352,9 @@ public class GameController
             return authenticatedUserOrError;
         }
 
-        int[] numbers = request.getYourArrangedNumbers();
+        int[] numbers =yourArrangedNumbers.stream().mapToInt( Integer::intValue ).toArray();;
 
-        if (numbers.length != 5)
+        if (yourArrangedNumbers.size() != 5)
         {
             return ResponseEntity
                     .status( HttpStatus.BAD_REQUEST )
@@ -388,9 +393,9 @@ public class GameController
         List<Integer> checkedNumbers = new ArrayList<Integer>();
         int correctCount = 0;
 
-        for (int i = 0; i < numbers.length; i++)
+        for (int i = 0; i < yourArrangedNumbers.size(); i++)
         {
-            int number = numbers[ i ];
+            int number = yourArrangedNumbers.get( i );
 
             if (i > 0)
             {
@@ -438,19 +443,17 @@ public class GameController
         user.setScore( user.getScore() + 2 );
         userService.save( user );
 
-        String result = Arrays.stream( numbers )
-                        .mapToObj( String::valueOf )
-                        .collect( Collectors.joining( "," ) );
+        String result = yourArrangedNumbers.stream().map( String::valueOf ).collect(Collectors.joining( "," ) );
 
         return ResponseEntity
                 .status( HttpStatus.OK )
                 .body(
-                        new ServerApiResponse<>(
-                                HttpStatus.OK.value(),
-                                roundNumberString + "Congratulations! You have correctly guessed the order of the 5 numbers (" + result + ") and earned 2 points. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
-                                new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                                null
-                        )
+                    new ServerApiResponse<>(
+                        HttpStatus.OK.value(),
+                        roundNumberString + "Congratulations! You have correctly guessed the order of the 5 numbers (" + result + ") and earned 2 points. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
+                        null
+                    )
                 );
     }
 

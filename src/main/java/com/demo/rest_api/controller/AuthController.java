@@ -1,7 +1,5 @@
 package com.demo.rest_api.controller;
 
-import com.demo.rest_api.dto.LoginRequest;
-import com.demo.rest_api.dto.RegisterRequest;
 import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
@@ -11,14 +9,15 @@ import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.StringHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping( "/api/auth" )
 @Tag( name = "Auth" )
+@Validated
 public class AuthController
 {
     @Autowired
@@ -51,9 +51,20 @@ public class AuthController
             > Once registered successfully, you can log in using the `/api/auth/login` endpoint to receive a JWT token.
             """
     )
-    public ResponseEntity<?> register( @RequestBody RegisterRequest request )
+    @ApiResponses( value =
     {
-        if (StringHelper.isNullOrEmpty( request.getUsername() ))
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content
+        )
+    } )
+    public ResponseEntity<?> register(
+        @RequestParam String username,
+        @RequestParam String password
+    )
+    {
+        if (StringHelper.isNullOrEmpty( username ))
         {
             return ResponseEntity
                     .status( HttpStatus.BAD_REQUEST )
@@ -67,7 +78,7 @@ public class AuthController
                     );
         }
 
-        if (StringHelper.isNullOrEmpty( request.getPassword() ))
+        if (StringHelper.isNullOrEmpty( password ))
         {
             return ResponseEntity
                     .status( HttpStatus.BAD_REQUEST )
@@ -81,7 +92,7 @@ public class AuthController
                     );
         }
 
-        if (userRepository.findByUsernameIgnoreCase( request.getUsername() ).isPresent())
+        if (userRepository.findByUsernameIgnoreCase( username ).isPresent())
         {
             return ResponseEntity
                     .status( HttpStatus.CONFLICT )
@@ -95,7 +106,7 @@ public class AuthController
                     );
         }
 
-        User user = new User( request.getUsername(), request.getPassword() );
+        User user = new User( username, password );
         userService.save( user );
 
         return ResponseEntity
@@ -125,9 +136,20 @@ public class AuthController
             4. Click **Authorize** — now your requests will include the token.
             """
     )
-    public ResponseEntity<?> login( @RequestBody LoginRequest request )
+    @ApiResponses( value =
     {
-        Optional<User> userOpt = userService.findByUsername( request.getUsername() );
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content
+        )
+    } )
+    public ResponseEntity<?> login(
+        @RequestParam String username,
+        @RequestParam String password
+    )
+    {
+        Optional<User> userOpt = userService.findByUsername( username );
 
         if (userOpt.isEmpty())
         {
@@ -145,7 +167,7 @@ public class AuthController
 
         User user = userOpt.get();
 
-        if (!userService.validatePassword( request.getPassword(), user.getPassword() ))
+        if (!userService.validatePassword( password, user.getPassword() ))
         {
             return ResponseEntity
                     .status( HttpStatus.UNAUTHORIZED )
