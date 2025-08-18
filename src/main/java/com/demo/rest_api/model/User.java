@@ -1,11 +1,15 @@
 package com.demo.rest_api.model;
 
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document( collection = "user" )
 public class User
 {
-    private String id = "";
+    @BsonId
+    private ObjectId _id = null;
+
     private String username = "";
     private String password = "";
     private boolean isPasswordEncoded = false;
@@ -17,14 +21,10 @@ public class User
 
     public User( String username, String password )
     {
+        this._id = new ObjectId();
         this.username = username;
         this.password = password;
         this.score = 0;
-    }
-
-    public String getId()
-    {
-        return this.id;
     }
 
     public String getUsername()
