@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -131,7 +132,7 @@ public class GameController
             schema = @Schema( implementation = ErrorResponse.class )
         )
     )
-    public ResponseEntity<?> guessNumber( @RequestBody PlayRequest request )
+    public ResponseEntity<?> guessNumber( @Valid @RequestBody PlayRequest request )
     {
         ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
 
@@ -185,7 +186,7 @@ public class GameController
                     .body(
                         new ApiResponse<>(
                             HttpStatus.OK.value(),
-                                roundNumberString + "Your guessed number is too high! Try again.",
+                                roundNumberString + "Your guessed number (" + number + ") is too high! Try again.",
                             new UserResponse( user ),
                             null
                         )
@@ -201,7 +202,7 @@ public class GameController
                     .body(
                         new ApiResponse<>(
                             HttpStatus.OK.value(),
-                                roundNumberString + "Your guessed number is too low! Try again.",
+                                roundNumberString + "Your guessed number (" + number + ") is too low! Try again.",
                             new UserResponse( user ),
                             null
                         )
@@ -217,8 +218,8 @@ public class GameController
                 .body(
                     new ApiResponse<>(
                         HttpStatus.OK.value(),
-                            roundNumberString + "Congratulations! You have guessed the correct number and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
-                        new UserResponse( user ),
+                        roundNumberString + "Congratulations! You have guessed the correct number (" + number + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
                         null
                     )
                 );
