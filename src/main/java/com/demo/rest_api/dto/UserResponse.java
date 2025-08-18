@@ -1,5 +1,6 @@
 package com.demo.rest_api.dto;
 
+import com.demo.rest_api.model.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect( fieldVisibility = JsonAutoDetect.Visibility.ANY )
@@ -7,10 +8,16 @@ public class UserResponse
 {
     private String username;
     private int score;
+    private int attempts = 0;
+    private int rounds = 0;
+    private float averageAttemptsPerRound = 0;
 
-    public UserResponse( String username, int score )
+    public UserResponse( User user )
     {
-        this.username = username;
-        this.score = score;
+        username = user.getUsername();
+        score = user.getScore();
+        attempts = user.getAttempts();
+        rounds = user.getRounds();
+        averageAttemptsPerRound = User.getAverageAttemptsPerRound( user );
     }
 }

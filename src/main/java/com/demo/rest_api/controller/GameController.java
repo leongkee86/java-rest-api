@@ -6,6 +6,7 @@ import com.demo.rest_api.dto.PlayRequest;
 import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
+import com.demo.rest_api.service.LeaderboardService;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.NumberHelper;
@@ -38,24 +39,13 @@ public class GameController
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private LeaderboardService leaderboardService;
+
     private boolean hasGameStarted = false;
     private int currentNumber = 0;
 
-    @PostMapping( "/guessNumber" )
-    @SecurityRequirement( name = "bearerAuth" )
-    @Operation(
-        summary = "Start a new round or continue the current round to play the game.",
-        description = "Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result."
-    )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "401",
-        description = "Unauthorized - invalid or missing token",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema( implementation = ErrorResponse.class )
-        )
-    )
-    public ResponseEntity<?> guessNumber( @RequestBody PlayRequest request )
+    private ResponseEntity<?> getAuthenticatedUserOrError()
     {
         // At this point, Spring Security should have already set the authenticated user.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -92,25 +82,114 @@ public class GameController
                     );
         }
 
-        User user = userOpt.get();
+        return ResponseEntity.ok(userOpt.get());
+    }
 
-        if (!hasGameStarted)
+    @PostMapping( "/profile" )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        summary = "View your profile information.",
+        description = ""
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized - invalid or missing token",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema( implementation = ErrorResponse.class )
+        )
+    )
+    public ResponseEntity<?> getProfile()
+    {
+        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
-            hasGameStarted = true;
-            currentNumber = NumberHelper.getRandomNumber( 1, 100 );
+            return authenticatedUserOrError;
+        }
+
+        return ResponseEntity
+                .status( HttpStatus.OK )
+                .body(
+                    new ApiResponse<>(
+                        HttpStatus.OK.value(),
+                        Constants.DEFAULT_SUCCESS_MESSAGE,
+                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
+                        null
+                    )
+                );
+    }
+
+    @PostMapping( "/guessNumber" )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        summary = "Start a new round or continue the current round to play the game.",
+        description = "Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized - invalid or missing token",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema( implementation = ErrorResponse.class )
+        )
+    )
+    public ResponseEntity<?> guessNumber( @RequestBody PlayRequest request )
+    {
+        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
+        {
+            return authenticatedUserOrError;
         }
 
         int number = request.getYourGuessedNumber();
 
+        if (number < 1 || number > 100)
+        {
+            return ResponseEntity
+                    .status( HttpStatus.BAD_REQUEST )
+                    .body(
+                        new ApiResponse<>(
+                            HttpStatus.BAD_REQUEST.value(),
+                            "Please enter a number from 1 to 100 in the 'yourGuessedNumber' field.",
+                            null,
+                            null
+                        )
+                    );
+        }
+
+        if (!hasGameStarted)
+        {
+            hasGameStarted = true;
+
+            if (user.getRounds() < 1)
+            {
+                user.setRounds( 1 );
+            }
+            else
+            {
+                user.setRounds( user.getRounds() + 1 );
+            }
+
+            currentNumber = NumberHelper.getRandomNumber( 1, 100 );
+        }
+
+        user.setAttempts( user.getAttempts() + 1 );
+
+        String roundNumberString = "[ ROUND " + user.getRounds() + " ] ";
+
         if (number > currentNumber)
         {
+            userService.save( user );
+
             return ResponseEntity
                     .status( HttpStatus.OK )
                     .body(
                         new ApiResponse<>(
                             HttpStatus.OK.value(),
-                            "Your guessed number is too high! Try again.",
-                            null,
+                                roundNumberString + "Your guessed number is too high! Try again.",
+                            new UserResponse( user ),
                             null
                         )
                     );
@@ -118,13 +197,15 @@ public class GameController
 
         if (number < currentNumber)
         {
+            userService.save( user );
+
             return ResponseEntity
                     .status( HttpStatus.OK )
                     .body(
                         new ApiResponse<>(
                             HttpStatus.OK.value(),
-                            "Your guessed number is too low! Try again.",
-                            null,
+                                roundNumberString + "Your guessed number is too low! Try again.",
+                            new UserResponse( user ),
                             null
                         )
                     );
@@ -139,8 +220,8 @@ public class GameController
                 .body(
                     new ApiResponse<>(
                         HttpStatus.OK.value(),
-                            "Congratulations! You have guessed the correct number and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
-                        new UserResponse( user.getUsername(), user.getScore() ),
+                            roundNumberString + "Congratulations! You have guessed the correct number and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                        new UserResponse( user ),
                         null
                     )
                 );
@@ -153,17 +234,23 @@ public class GameController
     )
     public ResponseEntity<?> getLeaderboard( @RequestParam( defaultValue = "100" ) int limit )
     {
-        List<User> users = userRepository.findAll( Sort.by( Sort.Direction.DESC, "score" ) )
+        List<User> users = userRepository.findAll(
+                                Sort.by(
+                                    Sort.Order.desc( "score" ),     // highest score first
+                                    Sort.Order.asc( "attempts" ),   // if scores equal, fewer attempts first
+                                    Sort.Order.asc( "rounds" )       // if both equal, lower rounds first
+                                )
+                            )
                             .stream()
                             .limit( limit )
                             .toList();
 
         List<LeaderboardUserResponse> leaderboardUsers = new ArrayList<>();
 
-        int rank = 1;
+        long rank = 1;
         for (User user : users)
         {
-            leaderboardUsers.add( new LeaderboardUserResponse( rank, user.getUsername(), user.getScore() ) );
+            leaderboardUsers.add( new LeaderboardUserResponse( rank, user ) );
             rank++;
         }
 

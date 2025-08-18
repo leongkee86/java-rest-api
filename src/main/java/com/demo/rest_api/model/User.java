@@ -10,6 +10,8 @@ public class User
     private String password = "";
     private boolean isPasswordEncoded = false;
     private int score = 0;
+    private int attempts = 0;
+    private int rounds = 0;
 
     public User( String username, String password )
     {
@@ -56,5 +58,37 @@ public class User
     public int getScore()
     {
         return this.score;
+    }
+
+    public int getAttempts()
+    {
+        return attempts;
+    }
+
+    public void setAttempts( int attempts )
+    {
+        this.attempts = attempts;
+    }
+
+    public int getRounds()
+    {
+        return rounds;
+    }
+
+    public void setRounds(int rounds)
+    {
+        this.rounds = rounds;
+    }
+
+    public static float getAverageAttemptsPerRound( User user )
+    {
+        int attempts = user.getAttempts();
+
+        if (attempts == 0)
+        {
+            return 0;
+        }
+
+        return ( float )attempts / user.getRounds();
     }
 }

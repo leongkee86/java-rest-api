@@ -81,7 +81,7 @@ public class AuthController
                     );
         }
 
-        if (userRepository.findByUsername( request.getUsername() ).isPresent())
+        if (userRepository.findByUsernameIgnoreCase( request.getUsername() ).isPresent())
         {
             return ResponseEntity
                     .status( HttpStatus.CONFLICT )
@@ -163,7 +163,7 @@ public class AuthController
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put( "token", token );
-        data.put( "user", new UserResponse( user.getUsername(), user.getScore() ) );
+        data.put( "user", new UserResponse( user ) );
 
         return ResponseEntity
                 .status( HttpStatus.OK )
