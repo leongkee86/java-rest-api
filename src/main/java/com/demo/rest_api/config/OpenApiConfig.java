@@ -15,7 +15,7 @@ import java.util.List;
 @OpenAPIDefinition(
     info = @Info(
                 title = "Server APIs (Java + MongoDB)",
-                version = "0.0.1",
+                version = "0.0.2",
                 description = "Hi. I am Lim Leong Kee.<br>I have developed the entire set of server-side APIs using Java, with MongoDB as the underlying database. These APIs are fully documented and available for exploration and interaction via this page.<br>I would sincerely appreciate any feedback, suggestions or improvements you might have. Thank you for taking the time to review my work.",
                 contact = @io.swagger.v3.oas.annotations.info.Contact(
                     name = "Lim Leong Kee",

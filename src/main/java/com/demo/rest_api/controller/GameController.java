@@ -87,8 +87,9 @@ public class GameController
     @Operation(
         summary = "View a user's game profile",
         description = """
-        - View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
-        - View **another user's game profile** by providing their `username` (no authentication required).
+        View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
+        
+        View **another user's game profile** by providing their `username` (no authentication required).
         """
     )
     @ApiResponses( value =
