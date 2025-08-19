@@ -520,7 +520,6 @@ public class GameController
     @Operation(
         summary = "Play the Rock Paper Scissors game with another user. Use this endpoint to start a new round or continue the current round to play the game.",
         description = """
-        
         **Important:** You must have at least 1 point to play this game. You can play other games to earn points.
         
         1. Choose an opponent by entering the opponent's username in the `opponentUsername` field.
@@ -533,7 +532,6 @@ public class GameController
         3. Enter how many points that you want to stake in the `pointsToStake` field. If you win, you will receive the staked points from the opponent. If you lose, you will transfer the staked points to the opponent.
         
         4. Press the **Execute** button and see the result.
-        
         """
     )
     @ApiResponses( value =
@@ -724,6 +722,85 @@ public class GameController
                         HttpStatus.OK.value(),
                         result + " Your current score is " + opponentUser.getScore() + ". Use this endpoint to play a new round.",
                         data,
+                        null
+                    )
+                );
+    }
+
+    @PostMapping( "/rockPaperScissors/practise" )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        summary = "Practise the Rock Paper Scissors game for fun.",
+        description = """
+        Practise the Rock Paper Scissors game for fun. No points to earn. The number of attempts will not increase with each play.
+        
+        Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field. Rock beats Scissors. Scissors beats Paper. Paper beats Rock.
+        
+        Then, press the **Execute** button and see the result.
+        """
+    )
+    @ApiResponses( value =
+    {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized — invalid or missing token",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content = @Content
+        )
+    } )
+    public ResponseEntity<?> practiseRockPaperScissors(
+        @Parameter(
+            description = "Select your choice",
+            required = true
+        )
+        @RequestParam( defaultValue = "Rock" ) RockPaperScissors yourChoice
+    )
+    {
+        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
+        {
+            return authenticatedUserOrError;
+        }
+
+        RockPaperScissors opponentChoice = EnumHelper.getRandomEnum( RockPaperScissors.class );
+
+        String result = "Your choice: { " + yourChoice.toString() + " } versus Opponent's choice: { " + opponentChoice.toString() + " } | ";
+
+        if (yourChoice == opponentChoice)
+        {
+            result += "It is a draw.";
+        }
+        else if (yourChoice.beats( opponentChoice ))
+        {
+            result += "You won!";
+        }
+        else
+        {
+            result += "You lost...";
+        }
+
+        return ResponseEntity
+                .status( HttpStatus.OK )
+                .body(
+                    new ServerApiResponse<>(
+                        HttpStatus.OK.value(),
+                        result + " Use this endpoint to play again.",
+                        null,
                         null
                     )
                 );
