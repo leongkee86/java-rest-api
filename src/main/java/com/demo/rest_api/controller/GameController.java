@@ -85,18 +85,19 @@ public class GameController
     @GetMapping( "/profile" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
+        operationId = "game/profile",
         summary = "View a user's game profile",
         description = """
-        View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
-        
-        View **another user's game profile** by providing their `username` (no authentication required).
-        """
+            View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
+            
+            View **another user's game profile** by providing their `username` (no authentication required).
+            """
     )
     @ApiResponses( value =
         {
-            @ApiResponse( responseCode = "200", description = "Game profile retrieved successfully" ),
-            @ApiResponse( responseCode = "401", description = "Unauthorized — required if viewing your own game profile" ),
-            @ApiResponse( responseCode = "404", description = "User not found" )
+            @ApiResponse( responseCode = "200", description = "Game profile retrieved successfully", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — required if viewing your own game profile", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "404", description = "User not found", content = @Content( mediaType = "" ) )
         }
     )
     public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
@@ -167,6 +168,7 @@ public class GameController
     @PostMapping( "/guessNumber" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
+        operationId = "game/guessNumber",
         summary = "Guess a number from 1 to 100 in this game. Use this endpoint to start a new round or continue the current round to play",
         description = """
             Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result.
@@ -184,22 +186,22 @@ public class GameController
         @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized — invalid or missing token",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input — number must be between 1 and 100",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "403",
             description = "Forbidden — guessing is not allowed at this time",
-            content = @Content
+            content = @Content( mediaType = "" )
         )
     } )
     public ResponseEntity<?> guessNumber(
@@ -346,8 +348,9 @@ public class GameController
     @PostMapping( "/arrangeNumbers" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-            summary = "Guess the sequence of 5 numbers in this game. Use this endpoint to start a new round or continue the current round to play.",
-            description = """
+        operationId = "game/arrangeNumbers",
+        summary = "Guess the sequence of 5 numbers in this game. Use this endpoint to start a new round or continue the current round to play.",
+        description = """
             Guess and enter the sequence of the 5 numbers (1, 2, 3, 4, 5) in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers (For example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result.
             
             ### Hints you will receive after each wrong guess:
@@ -364,22 +367,22 @@ public class GameController
         @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized — invalid or missing token",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input — must be exactly 5 numbers between 1 and 5",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "403",
             description = "Forbidden — guessing is not allowed at this time",
-            content = @Content
+            content = @Content( mediaType = "" )
         )
     } )
     public ResponseEntity<?> arrangeNumbers(
@@ -519,43 +522,44 @@ public class GameController
     @PostMapping( "/rockPaperScissors/challenge" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
+        operationId = "game/rockPaperScissors/challenge",
         summary = "Play the Rock Paper Scissors game with another user. Use this endpoint to start a new round or continue the current round to play the game.",
         description = """
-        **Important:** You must have at least 1 point to play this game. You can play other games to earn points.
-        
-        1. Choose an opponent by entering the opponent's username in the `opponentUsername` field.
-        
-        2. Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field.
-        > Rock beats Scissors.
-        > Scissors beats Paper.
-        > Paper beats Rock.
-        
-        3. Enter how many points that you want to stake in the `pointsToStake` field. If you win, you will receive the staked points from the opponent. If you lose, you will transfer the staked points to the opponent.
-        
-        4. Press the **Execute** button and see the result.
-        """
+            **Important:** You must have at least 1 point to play this game. You can play other games to earn points.
+            
+            1. Choose an opponent by entering the opponent's username in the `opponentUsername` field.
+            
+            2. Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field.
+            > Rock beats Scissors.
+            > Scissors beats Paper.
+            > Paper beats Rock.
+            
+            3. Enter how many points that you want to stake in the `pointsToStake` field. If you win, you will receive the staked points from the opponent. If you lose, you will transfer the staked points to the opponent.
+            
+            4. Press the **Execute** button and see the result.
+            """
     )
     @ApiResponses( value =
     {
         @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized — invalid or missing token",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "403",
             description = "Forbidden",
-            content = @Content
+            content = @Content( mediaType = "" )
         )
     } )
     public ResponseEntity<?> playRockPaperScissors(
@@ -731,36 +735,37 @@ public class GameController
     @PostMapping( "/rockPaperScissors/practise" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
+        operationId = "game/rockPaperScissors/practise",
         summary = "Practise the Rock Paper Scissors game for fun.",
         description = """
-        Practise the Rock Paper Scissors game for fun. No points to earn. The number of attempts will not increase with each play.
-        
-        Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field. Rock beats Scissors. Scissors beats Paper. Paper beats Rock.
-        
-        Then, press the **Execute** button and see the result.
-        """
+            Practise the Rock Paper Scissors game for fun. No points to earn. The number of attempts will not increase with each play.
+            
+            Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field. Rock beats Scissors. Scissors beats Paper. Paper beats Rock.
+            
+            Then, press the **Execute** button and see the result.
+            """
     )
     @ApiResponses( value =
     {
         @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized — invalid or missing token",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input",
-            content = @Content
+            content = @Content( mediaType = "" )
         ),
         @ApiResponse(
             responseCode = "403",
             description = "Forbidden",
-            content = @Content
+            content = @Content( mediaType = "" )
         )
     } )
     public ResponseEntity<?> practiseRockPaperScissors(
@@ -809,6 +814,7 @@ public class GameController
 
     @GetMapping( "/leaderboard" )
     @Operation(
+        operationId = "game/leaderboard",
         summary = "Get the top users from the leaderboard.",
         description = "Returns a list of users sorted by their score in descending order. You can optionally limit the number of users returned using the `limit` query parameter."
     )
@@ -817,7 +823,7 @@ public class GameController
         @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content
+            content = @Content( mediaType = "" )
         )
     } )
     public ResponseEntity<?> getLeaderboard( @RequestParam( defaultValue = "100" ) int limit )

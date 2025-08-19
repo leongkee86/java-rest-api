@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ public class AuthController
 
     @PostMapping( "/register" )
     @Operation(
+        operationId = "auth/register",
         summary = "Registers for a new user account.",
         description = """
             Registers for a new user account.
@@ -52,13 +54,10 @@ public class AuthController
             """
     )
     @ApiResponses( value =
-    {
-        @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content
-        )
-    } )
+        {
+            @ApiResponse( responseCode = "200", description = "OK", content = @Content( mediaType = "" ) )
+        }
+    )
     public ResponseEntity<?> register(
         @RequestParam String username,
         @RequestParam String password
@@ -123,6 +122,7 @@ public class AuthController
 
     @PostMapping( "/login" )
     @Operation(
+        operationId = "auth/login",
         summary = "Log in to an existing user account.",
         description = """
             Authenticates a user with username and password.
@@ -141,13 +141,10 @@ public class AuthController
             """
     )
     @ApiResponses( value =
-    {
-        @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content
-        )
-    } )
+        {
+            @ApiResponse( responseCode = "200", description = "Successful login", content = @Content( mediaType = "" ) )
+        }
+    )
     public ResponseEntity<?> login(
         @RequestParam String username,
         @RequestParam String password
@@ -198,6 +195,48 @@ public class AuthController
                         HttpStatus.OK.value(),
                         Constants.DEFAULT_SUCCESS_MESSAGE,
                         data,
+                        null
+                    )
+                );
+    }
+
+    @PostMapping( "/logout" )
+    @Operation(
+        operationId = "auth/logout",
+        summary = "Log out of your current user account.",
+        description = "Log out from the user account that you are currently logged in to."
+    )
+    @ApiResponses( value =
+        {
+            @ApiResponse( responseCode = "200", description = "Successful logout", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) ),
+        }
+    )
+    public ResponseEntity<?> logout( HttpServletRequest request )
+    {
+        String authHeader = request.getHeader( "Authorization" );
+
+        if (authHeader == null)
+        {
+            return ResponseEntity
+                    .status( HttpStatus.UNAUTHORIZED )
+                    .body(
+                        new ServerApiResponse<>(
+                            HttpStatus.UNAUTHORIZED.value(),
+                            "You are not logged in.",
+                            null,
+                            null
+                        )
+                    );
+        }
+
+        return ResponseEntity
+                .status( HttpStatus.OK )
+                .body(
+                    new ServerApiResponse<>(
+                        HttpStatus.OK.value(),
+                        "You have been successfully logged out.",
+                        null,
                         null
                     )
                 );

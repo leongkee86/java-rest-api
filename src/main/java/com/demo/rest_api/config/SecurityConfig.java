@@ -1,7 +1,9 @@
 package com.demo.rest_api.config;
 
 import com.demo.rest_api.security.JwtFilter;
+import com.demo.rest_api.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,10 +12,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig
 {
+    @Value( "${ALLOWED_ORIGINS}" )
+    private String allowedOrigins;
+
     @Autowired
     private JwtFilter jwtFilter;
 
@@ -21,8 +31,9 @@ public class SecurityConfig
     public SecurityFilterChain filterChain( HttpSecurity http ) throws Exception
     {
         http.csrf( AbstractHttpConfigurer::disable )
-            .authorizeHttpRequests( auth -> auth
-                    .requestMatchers(
+            .cors( cors -> {} ) // Enable CORS with an empty customizer.
+            .authorizeHttpRequests(
+                    auth -> auth.requestMatchers(
                         "/api/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**"
@@ -37,6 +48,21 @@ public class SecurityConfig
             .addFilterBefore( jwtFilter, UsernamePasswordAuthenticationFilter.class );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource()
+    {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins( StringHelper.csvToList( allowedOrigins ) );
+        config.setAllowedMethods( List.of( "GET", "POST", "PUT", "DELETE", "OPTIONS") );
+        config.setAllowedHeaders( List.of( "*") );
+        config.setAllowCredentials( true );
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration( "/**", config );
+
+        return source;
     }
 
     @Bean
