@@ -129,10 +129,14 @@ public class AuthController
             
             On success, returns a JWT access token in the `token` field.
             
-            ### How to use the token in Swagger UI:
+            **How to use the token in Swagger UI:**
+            
             1. Copy the `token` from the response.
+            
             2. Click the **Authorize** button (top right in Swagger UI).
+            
             3. Paste the token into the `value` input field.
+            
             4. Click **Authorize** — now your requests will include the token.
             """
     )

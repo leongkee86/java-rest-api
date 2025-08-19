@@ -27,6 +27,8 @@ public class User
     private int arrangeNumbersCurrentRound = 0;
     private int[] arrangedNumbers = null;
 
+    private int rockPaperScissorsCurrentRound = 0;
+
     public User( String username, String password )
     {
         this._id = new ObjectId();
@@ -82,7 +84,9 @@ public class User
 
     public void updateRounds()
     {
-        rounds = guessNumberCurrentRound + arrangeNumbersCurrentRound;
+        rounds = guessNumberCurrentRound
+                + arrangeNumbersCurrentRound
+                + rockPaperScissorsCurrentRound;
     }
 
     public int getRounds()
@@ -182,5 +186,16 @@ public class User
     public int[] getArrangedNumbers()
     {
         return arrangedNumbers;
+    }
+
+    public void setRockPaperScissorsCurrentRound( int rockPaperScissorsCurrentRound )
+    {
+        this.rockPaperScissorsCurrentRound = rockPaperScissorsCurrentRound;
+        updateRounds();
+    }
+
+    public int getRockPaperScissorsCurrentRound()
+    {
+        return this.rockPaperScissorsCurrentRound;
     }
 }
