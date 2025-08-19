@@ -9,12 +9,10 @@ import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.NumberHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -23,11 +21,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,7 +63,6 @@ public class GameController
         }
 
         String username = authentication.getName();  // from JWT token subject
-
         Optional<User> userOpt = userService.findByUsername( username );
 
         if (userOpt.isEmpty())
@@ -84,36 +79,77 @@ public class GameController
                     );
         }
 
-        return ResponseEntity.ok(userOpt.get());
+        return ResponseEntity.ok( userOpt.get() );
     }
 
     @GetMapping( "/profile" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        summary = "View your game profile information.",
-        description = ""
+        summary = "View a user's game profile",
+        description = """
+        - View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
+        - View **another user's game profile** by providing their `username` (no authentication required).
+        """
     )
     @ApiResponses( value =
-    {
-        @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized — invalid or missing token",
-            content = @Content
-        )
-    } )
-    public ResponseEntity<?> getProfile()
-    {
-        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
-
-        if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
-            return authenticatedUserOrError;
+            @ApiResponse( responseCode = "200", description = "Game profile retrieved successfully" ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — required if viewing your own game profile" ),
+            @ApiResponse( responseCode = "404", description = "User not found" )
         }
+    )
+    public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
+    {
+        if (username != null && !username.isBlank())
+        {
+            return getUserProfile( username );
+        }
+        else
+        {
+            return getOwnProfile();
+        }
+    }
+
+    private ResponseEntity<?> getOwnProfile()
+    {
+        ResponseEntity<?> authResult = getAuthenticatedUserOrError();
+
+        if (!( authResult.getBody() instanceof User user ))
+        {
+            return authResult;
+        }
+
+        return ResponseEntity
+                .status( HttpStatus.OK )
+                .body(
+                    new ServerApiResponse<>(
+                        HttpStatus.OK.value(),
+                        Constants.DEFAULT_SUCCESS_MESSAGE,
+                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
+                        null
+                    )
+                );
+    }
+
+    private ResponseEntity<?> getUserProfile( String username )
+    {
+        Optional<User> optionalUser = userService.findByUsername( username );
+
+        if (optionalUser.isEmpty())
+        {
+            return ResponseEntity
+                    .status( HttpStatus.NOT_FOUND )
+                    .body(
+                        new ServerApiResponse<>(
+                            HttpStatus.NOT_FOUND.value(),
+                            "User not found",
+                            null,
+                            null
+                        )
+                    );
+        }
+
+        User user = optionalUser.get();
 
         return ResponseEntity
                 .status( HttpStatus.OK )

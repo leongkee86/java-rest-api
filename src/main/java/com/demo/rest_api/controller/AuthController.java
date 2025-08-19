@@ -92,7 +92,7 @@ public class AuthController
                     );
         }
 
-        if (userRepository.findByUsernameIgnoreCase( username ).isPresent())
+        if (userService.findByUsername( username ).isPresent())
         {
             return ResponseEntity
                     .status( HttpStatus.CONFLICT )

@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService
@@ -18,7 +19,9 @@ public class UserService
 
     public Optional<User> findByUsername( String username )
     {
-        return userRepository.findByUsernameIgnoreCase( username );
+        // Ignore case.
+        String regex = "^" + Pattern.quote( username ) + "$";
+        return userRepository.findByUsernameRegex( regex );
     }
 
     public User save( User user )
