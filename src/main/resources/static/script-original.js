@@ -1,7 +1,7 @@
 window.onload = function()
 {
     let token = localStorage.getItem( "authToken" );
-    let username = localStorage.getItem( "username" );
+    let username = "";
 
     const ui = SwaggerUIBundle(
         {
@@ -48,39 +48,26 @@ window.onload = function()
                 {
                     if (responseUrl.pathname === loginApiPath)
                     {
-                        let jsonData;
+                        const responseData = JSON.parse( response.data )?.data;
 
-                        if (typeof response.data === "string")
+                        if (responseData)
                         {
-                            try
+                            token = responseData.token;
+
+                            if (token)
                             {
-                                jsonData = JSON.parse( response.data );
+                                isSuccessful = true;
+                                ui.preauthorizeApiKey( "bearerAuth", token );
+                                localStorage.setItem( "authToken", token );
+
+                                updateUsernameDisplay( responseData.user );
+
+                                setTimeout( () =>
+                                {
+                                    alert( "Login successful! You have been authorized and can access the protected API endpoints now." );
+                                }
+                                , 100 );
                             }
-                            catch ( e )
-                            {
-                                alert( "Something went wrong." );
-                                return response;
-                            }
-                        }
-                        else
-                        {
-                            jsonData = response.data;
-                        }
-                        
-                        const jsonDataData = jsonData?.data;
-                        token = jsonDataData?.token;
-
-                        if (token)
-                        {
-                            username = jsonDataData?.user.username;
-
-                            isSuccessful = true;
-                            ui.preauthorizeApiKey( "bearerAuth", token );
-                            localStorage.setItem( "authToken", token );
-                            localStorage.setItem( "username", username );
-
-                            updateUsernameDisplay( username );
-                            alert( "Login successful! You have been authorized and can access the protected API endpoints now." );
                         }
                     }
                     else if (responseUrl.pathname === logoutApiPath)
@@ -90,11 +77,36 @@ window.onload = function()
                             isSuccessful = true;
                             ui.preauthorizeApiKey( "bearerAuth", "" );
                             localStorage.removeItem( "authToken" );
-                            localStorage.removeItem( "username" );
 
                             updateUsernameDisplay( null );
-                            alert( "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue." );
-                            location.reload();
+
+                            setTimeout( () =>
+                            {
+                                alert( "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue." );
+                                location.reload();
+                            }
+                            , 100 );
+                        }
+                    }
+                    else
+                    {
+                        const responseData = JSON.parse( response.data )?.data;
+
+                        if (responseData)
+                        {
+                            const responseDataUser = responseData.user;
+
+                            if (responseDataUser)
+                            {
+                                if (responseDataUser.username === username)
+                                {
+                                    updateUsernameDisplay( responseDataUser );
+                                }
+                            }
+                            else if (responseData.username === username)
+                            {
+                                updateUsernameDisplay( responseData );
+                            }
                         }
                     }
                 }
@@ -116,22 +128,77 @@ window.onload = function()
 
             onComplete: () =>
             {
-                if (token && username)
+                if (token)
                 {
-                    ui.preauthorizeApiKey( "bearerAuth", token );
-                    updateUsernameDisplay( username );
-                    alert( "Welcome back! You have been automatically logged in, authorized, and can access the protected API endpoints now." );
+                    if (navigator.onLine)
+                    {
+                        fetch( "http://localhost:8080/api/game/profile",
+                            {
+                                method: 'GET',
+                                headers:
+                                {
+                                    'Authorization': 'Bearer ' + token
+                                }
+                            } )
+                            .then( response =>
+                                {
+                                    if (response.ok)
+                                    {
+                                        return response.json();
+                                    }
+                                    else
+                                    {
+                                        throw new Error( 'HTTP error! Status: ' + response.status );
+                                    }
+                                }
+                            )
+                            .then( data =>
+                                {
+                                    ui.preauthorizeApiKey( "bearerAuth", token );
+
+                                    const user = data.data;
+                                    updateUsernameDisplay( user );
+
+                                    setTimeout( () =>
+                                    {
+                                        alert( `Welcome back, ${user.username}! You have been automatically logged in, authorized, and can access the protected API endpoints now.` );
+                                    }
+                                    , 100 );
+                                }
+                            )
+                            .catch( error =>
+                                {
+                                    localStorage.removeItem( "authToken" );
+                                    updateUsernameDisplay( null );
+
+                                    setTimeout( () =>
+                                    {
+                                        alert( "Something went wrong or your session has expired. Please log in again." );
+                                    }
+                                    , 100 );
+                                }
+                            );
+                    }
+                    else
+                    {
+                        alert( "You are currently offline. Auto-login will not work without an internet connection. Please check your internet connection and refresh this page to try again." );
+                    }
                 }
             }
         }
     )
 
-    updateUsernameDisplay( username );
+    updateUsernameDisplay( null );
 
-    function updateUsernameDisplay( username )
+    function updateUsernameDisplay( user )
     {
-        document.getElementById( 'username-display' ).textContent = ( username )
-            ? `Welcome! You are currently logged in as "${username}".`
+        if (user)
+        {
+            username = user.username;
+        }
+
+        document.getElementById( 'user-info-display' ).innerHTML = ( user )
+            ? `Welcome! You are currently logged in as <strong>"${user.username}"</strong>.<br>Your current score: ${user.score}`
             : "You are not logged in yet. Please log in to continue.";
     }
 }
@@ -140,7 +207,7 @@ const scrollWrapper = document.querySelector( '.scroll-wrapper' );
 
 window.addEventListener( 'scroll', () =>
     {
-        if (window.scrollY > 50)
+        if (window.scrollY > 250)
         {
             scrollWrapper.classList.add( 'hidden' );
         }
