@@ -193,7 +193,7 @@ public class AuthController
                 .body(
                     new ServerApiResponse<>(
                         HttpStatus.OK.value(),
-                        Constants.DEFAULT_SUCCESS_MESSAGE,
+                        "Login successful! You have been authorized and can access the protected API endpoints now.",
                         data,
                         null
                     )
@@ -235,7 +235,7 @@ public class AuthController
                 .body(
                     new ServerApiResponse<>(
                         HttpStatus.OK.value(),
-                        "You have been successfully logged out.",
+                        "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue.",
                         null,
                         null
                     )
