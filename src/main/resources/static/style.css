@@ -86,3 +86,8 @@
      1px  1px 0 white;
   z-index: 1000;
 }
+
+button.try-out__btn
+{
+  display: none !important;
+}

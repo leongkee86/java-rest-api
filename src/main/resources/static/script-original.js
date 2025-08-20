@@ -184,11 +184,31 @@ window.onload = function()
                         alert( "You are currently offline. Auto-login will not work without an internet connection. Please check your internet connection and refresh this page to try again." );
                     }
                 }
+
+                const system = ui.getSystem();
+                
+                if (system.authActions && system.authActions.logout)
+                {
+                    const originalLogout = system.authActions.logout;
+
+                    system.authActions.logout = ( ...args ) =>
+                    {
+                        localStorage.removeItem( "authToken" );
+                        updateUsernameDisplay( null );
+                        
+                        setTimeout( () =>
+                        {
+                            alert( "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue." );
+                            location.reload();
+                        }
+                        , 100 );
+
+                        return originalLogout( ...args );
+                    };
+                }
             }
         }
     )
-
-    updateUsernameDisplay( null );
 
     function updateUsernameDisplay( user )
     {
@@ -200,6 +220,43 @@ window.onload = function()
         document.getElementById( 'user-info-display' ).innerHTML = ( user )
             ? `Welcome! You are currently logged in as <strong>"${user.username}"</strong>.<br>Your current score: ${user.score}`
             : "You are not logged in yet. Please log in to continue.";
+    }
+
+    updateUsernameDisplay( null );
+    
+    // Watch for buttons added later (when operations are expanded).
+    const observer = new MutationObserver( mutations =>
+        {
+            for (const mutation of mutations)
+            {
+                for (const node of mutation.addedNodes)
+                {
+                    if (node.nodeType === 1)
+                    {
+                        clickTryItOutButtons( node );
+                    }
+                }
+            }
+        }
+    );
+
+    observer.observe( document.getElementById( 'swagger-ui' ),
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+
+    function clickTryItOutButtons( root = document )
+    {
+        const buttons = Array.from( root.querySelectorAll( 'button.try-out__btn' ) )
+            .filter( btn => btn.textContent.trim() === 'Try it out');
+
+        buttons.forEach( btn =>
+            {
+                btn.click();
+            }
+        );
     }
 }
 
