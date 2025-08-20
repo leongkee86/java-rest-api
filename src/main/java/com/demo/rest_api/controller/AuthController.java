@@ -113,7 +113,7 @@ public class AuthController
                 .body(
                     new ServerApiResponse<>(
                         HttpStatus.CREATED.value(),
-                        Constants.DEFAULT_SUCCESS_MESSAGE,
+                        "Registration successful. Please use the 'api/auth/login' endpoint to log in to your account.",
                         null,
                         null
                     )
