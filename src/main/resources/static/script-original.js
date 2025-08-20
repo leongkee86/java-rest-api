@@ -218,12 +218,12 @@ window.onload = function()
         }
 
         document.getElementById( 'user-info-display' ).innerHTML = ( user )
-            ? `Welcome! You are currently logged in as <strong>"${user.username}"</strong>.<br>Your current score: ${user.score}`
+            ? `Welcome! You are currently logged in as <strong>"${user.username}"</strong>.<br>Your current score: <strong>${user.score}</strong>`
             : "You are not logged in yet. Please log in to continue.";
     }
 
     updateUsernameDisplay( null );
-    
+
     // Watch for buttons added later (when operations are expanded).
     const observer = new MutationObserver( mutations =>
         {
@@ -264,7 +264,7 @@ const scrollWrapper = document.querySelector( '.scroll-wrapper' );
 
 window.addEventListener( 'scroll', () =>
     {
-        if (window.scrollY > 250)
+        if (window.scrollY > 400)
         {
             scrollWrapper.classList.add( 'hidden' );
         }

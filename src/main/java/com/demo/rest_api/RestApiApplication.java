@@ -13,9 +13,9 @@ public class RestApiApplication
         {
             // Load .env variables into the system environment
             Dotenv dotenv = Dotenv.load();
-            dotenv.entries().forEach(entry ->
+            dotenv.entries().forEach( entry ->
                 {
-                    System.setProperty(entry.getKey(), entry.getValue());
+                    System.setProperty( entry.getKey(), entry.getValue() );
                 }
             );
         }
