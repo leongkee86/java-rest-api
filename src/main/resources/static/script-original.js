@@ -135,3 +135,18 @@ window.onload = function()
             : "You are not logged in yet. Please log in to continue.";
     }
 }
+
+const scrollWrapper = document.querySelector( '.scroll-wrapper' );
+
+window.addEventListener( 'scroll', () =>
+    {
+        if (window.scrollY > 50)
+        {
+            scrollWrapper.classList.add( 'hidden' );
+        }
+        else
+        {
+            scrollWrapper.classList.remove( 'hidden' );
+        }
+    }
+);

@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <title>Server APIs (Java + MongoDB)</title>
-  <link href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">
+  <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
 <div id="username-display" style="position: fixed; top: 10px; right: 20px; font-weight: bold; font-size: 18px; font-family: Arial, Helvetica, sans-serif; z-index: 1000;"></div>
 <div id="swagger-ui"></div>
+
+<div class="scroll-wrapper" onclick="window.scrollBy( { top: 150, behavior: 'smooth' } )" title="Scroll down">
+  <div class="scroll-label">Scroll down</div>
+  <div class="scroll-indicator"><span class="arrow">&#x2193;</span></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-standalone-preset.js"></script>

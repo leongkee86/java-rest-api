@@ -1,0 +1,71 @@
+.scroll-wrapper
+{
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: bounce 1.5s infinite;
+  z-index: 1000;
+  cursor: pointer;
+  transition: opacity 0.6s ease;
+}
+
+.scroll-wrapper.hidden
+{
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scroll-label
+{
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #3B82F6;
+  margin-bottom: 10px;
+  text-shadow: 0 0 5px rgba(59, 130, 246, 0.4);
+  user-select: none;
+  pointer-events: none;
+}
+
+.scroll-indicator
+{
+  width: 60px;
+  height: 60px;
+  background-color: #3B82F6;
+  border-radius: 50%;
+  color: white;
+  font-size: 48px;
+  font-weight: 900;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.7);
+  text-shadow:
+    1px 0 currentColor,
+   -1px 0 currentColor;
+  user-select: none;
+}
+
+.scroll-indicator .arrow
+{
+  display: block;
+  transform: translateY(-2px);
+}
+
+@keyframes bounce
+{
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(15px); }
+}
+
+.hidden
+{
+    opacity: 0;
+    pointer-events: none;
+}
