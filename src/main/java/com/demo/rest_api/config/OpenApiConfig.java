@@ -27,7 +27,7 @@ import java.util.List;
             
               - 🎮 Play games: 1. Guess Number | 2. Arrange Numbers | 3. Rock Paper Scissors (Practice and Challenge modes)
               
-              - 🎁 Claim bonus points when ready
+              - 🎁 Claim your bonus points once they are available
               
               - 👤 View your own or any other user's game profiles
               
