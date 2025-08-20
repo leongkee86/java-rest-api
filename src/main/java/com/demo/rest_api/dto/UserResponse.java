@@ -11,6 +11,7 @@ public class UserResponse
     private int attempts = 0;
     private int rounds = 0;
     private float averageAttemptsPerRound = 0;
+    private int claimedBonusPoints = 0;
 
     public UserResponse( User user )
     {
@@ -19,5 +20,6 @@ public class UserResponse
         attempts = user.getAttempts();
         rounds = user.getRounds();
         averageAttemptsPerRound = User.getAverageAttemptsPerRound( user );
+        claimedBonusPoints = user.getClaimedBonusPoints();
     }
 }

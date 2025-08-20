@@ -3,6 +3,7 @@ package com.demo.rest_api.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberHelper
@@ -48,5 +49,27 @@ public class NumberHelper
         }
 
         return result;
+    }
+
+    private static final Random random = new Random();
+
+    /**
+     * Returns true if the random chance hits based on the given probability.
+     * @param probability the chance to hit, from 0.0 (0%) to 1.0 (100%)
+     * @return true if hit, false otherwise
+     */
+    public static boolean isHit( double probability )
+    {
+        if (probability <= 0)
+        {
+            return false;
+        }
+
+        if (probability >= 1)
+        {
+            return true;
+        }
+
+        return random.nextDouble() < probability;
     }
 }

@@ -4,6 +4,8 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
+
 @Document( collection = "user" )
 public class User
 {
@@ -16,6 +18,9 @@ public class User
     private int score = 0;
     private int attempts = 0;
     private int rounds = 0;
+
+    private int claimedBonusPoints = 0;
+    private Instant lastBonusClaimTime = null;
 
     private boolean hasGuessNumberStarted = false;
     private int guessNumberCurrentRound = 0;
@@ -104,6 +109,26 @@ public class User
         }
 
         return ( float )attempts / user.getRounds();
+    }
+
+    public void setClaimedBonusPoints( int claimedBonusPoints )
+    {
+        this.claimedBonusPoints = claimedBonusPoints;
+    }
+
+    public int getClaimedBonusPoints()
+    {
+        return claimedBonusPoints;
+    }
+
+    public void setLastBonusClaimTime( Instant lastBonusClaimTime )
+    {
+        this.lastBonusClaimTime = lastBonusClaimTime;
+    }
+
+    public Instant getLastBonusClaimTime()
+    {
+        return lastBonusClaimTime;
     }
 
     public void setHasGuessNumberStarted( boolean hasGuessNumberStarted )

@@ -25,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -525,7 +527,7 @@ public class GameController
         operationId = "2.6",
         summary = "Play the Rock Paper Scissors game with another user. Use this endpoint to start a new round or continue the current round to play the game.",
         description = """
-            **Important:** You must have at least 1 point to play this game. You can play other games to earn points.
+            **Important:** You must have at least 1 point to play this game. You can play other games to earn points or claim bonus points if you have not claimed them yet.
             
             1. Choose an opponent by entering the opponent's username in the `opponentUsername` field.
             
@@ -855,6 +857,125 @@ public class GameController
                         HttpStatus.OK.value(),
                         Constants.DEFAULT_SUCCESS_MESSAGE,
                         leaderboardUsers,
+                        null
+                    )
+                );
+    }
+
+    @PostMapping( "/claimBonusPoints" )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        operationId = "2.7",
+        summary = "Claim bonus points once every 3 hours.",
+        description = """
+        You can claim +1 bonus point every 3 hours. There is a 50% chance to receive +2 points instead!
+        
+        Once claimed, the bonus point(s) will be added to your current score.
+        
+        After claiming, you must wait for 3 hours before you are eligible to claim the next bonus points.
+        """
+    )
+    @ApiResponses( value =
+    {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content( mediaType = "" )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized — invalid or missing token",
+            content = @Content( mediaType = "" )
+        ),
+        @ApiResponse(
+            responseCode = "425",
+            description = "Too Early — Bonus points already claimed",
+            content = @Content( mediaType = "" )
+        )
+    } )
+    public ResponseEntity<?> claimBonusPoint()
+    {
+        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
+        {
+            return authenticatedUserOrError;
+        }
+
+        int COOLDOWN_HOURS = 3;
+        Duration COOLDOWN = Duration.ofHours( COOLDOWN_HOURS );
+
+        Instant timeNow = Instant.now();
+        Instant lastClaimTime = user.getLastBonusClaimTime();
+
+        if (lastClaimTime != null)
+        {
+            Duration elapsed = Duration.between( lastClaimTime, timeNow );
+
+            if (elapsed.compareTo( COOLDOWN ) < 0)
+            {
+                Duration remaining = COOLDOWN.minus( elapsed );
+                long hours = remaining.toHours();
+                long minutes = remaining.toMinutesPart();
+                long seconds = remaining.toSecondsPart();
+
+                String timeLeftMessage;
+                if (hours > 0)
+                {
+                    timeLeftMessage = String.format(
+                        "%d hour%s, %d minute%s, and %d second%s",
+                        hours, hours == 1 ? "" : "s",
+                        minutes, minutes == 1 ? "" : "s",
+                        seconds, seconds == 1 ? "" : "s"
+                    );
+                }
+                else if (minutes > 0)
+                {
+                    timeLeftMessage = String.format(
+                        "%d minute%s and %d second%s",
+                        minutes, minutes == 1 ? "" : "s",
+                        seconds, seconds == 1 ? "" : "s"
+                    );
+                }
+                else
+                {
+                    timeLeftMessage = String.format(
+                        "%d second%s",
+                        seconds, seconds == 1 ? "" : "s"
+                    );
+                }
+
+                return ResponseEntity
+                        .status( HttpStatus.TOO_EARLY )
+                        .body(
+                            new ServerApiResponse<>(
+                                HttpStatus.TOO_EARLY.value(),
+                                "Bonus points already claimed. Please try again after " + timeLeftMessage + " to claim your next bonus points.",
+                                null,
+                                null
+                            )
+                        );
+            }
+        }
+
+        int bonusPoints = ( NumberHelper.isHit( 0.5 ) ) ? 2 : 1;
+
+        user.setScore( user.getScore() + bonusPoints );
+        user.setClaimedBonusPoints( user.getClaimedBonusPoints() + bonusPoints );
+        user.setLastBonusClaimTime( timeNow );
+        userRepository.save( user );
+
+        String result = ( bonusPoints == 2 )
+                        ? "Bonus points claimed! You received +2 points!"
+                        : "Bonus point claimed! You received +1 point.";
+
+        return ResponseEntity
+                .status( HttpStatus.OK )
+                .body(
+                    new ServerApiResponse<>(
+                        HttpStatus.OK.value(),
+                        result + " Your current score is " + user.getScore() + ". Please come back after " + COOLDOWN_HOURS + " hours to claim your next bonus points.",
+                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
                         null
                     )
                 );
