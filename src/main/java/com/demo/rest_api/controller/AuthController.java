@@ -41,7 +41,7 @@ public class AuthController
 
     @PostMapping( "/register" )
     @Operation(
-        operationId = "1.1",
+        operationId = "1_1",
         summary = "Registers for a new user account.",
         description = """
             Registers for a new user account.
@@ -122,7 +122,7 @@ public class AuthController
 
     @PostMapping( "/login" )
     @Operation(
-        operationId = "1.2",
+        operationId = "1_2",
         summary = "Log in to an existing user account.",
         description = """
             Authenticates a user with username and password.
@@ -202,7 +202,7 @@ public class AuthController
 
     @PostMapping( "/logout" )
     @Operation(
-        operationId = "1.3",
+        operationId = "1_3",
         summary = "Log out of your current user account.",
         description = "Log out from the user account that you are currently logged in to."
     )

@@ -87,7 +87,7 @@ public class GameController
     @GetMapping( "/profile" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2.1",
+        operationId = "2_1",
         summary = "View a user's game profile",
         description = """
             View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
@@ -170,7 +170,7 @@ public class GameController
     @PostMapping( "/guessNumber" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2.3",
+        operationId = "2_3",
         summary = "Guess a number from 1 to 100 in this game. Use this endpoint to start a new round or continue the current round to play",
         description = """
             Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result.
@@ -350,7 +350,7 @@ public class GameController
     @PostMapping( "/arrangeNumbers" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2.4",
+        operationId = "2_4",
         summary = "Guess the sequence of 5 numbers in this game. Use this endpoint to start a new round or continue the current round to play.",
         description = """
             Guess and enter the sequence of the 5 numbers (1, 2, 3, 4, 5) in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers (For example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result.
@@ -524,7 +524,7 @@ public class GameController
     @PostMapping( "/rockPaperScissors/challenge" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2.6",
+        operationId = "2_6",
         summary = "Play the Rock Paper Scissors game with another user. Use this endpoint to start a new round or continue the current round to play the game.",
         description = """
             **Important:** You must have at least 1 point to play this game. You can play other games to earn points or claim bonus points if you have not claimed them yet.
@@ -737,7 +737,7 @@ public class GameController
     @PostMapping( "/rockPaperScissors/practise" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2.5",
+        operationId = "2_5",
         summary = "Practise the Rock Paper Scissors game for fun.",
         description = """
             Practise the Rock Paper Scissors game for fun. No points to earn. The number of attempts will not increase with each play.
@@ -816,7 +816,7 @@ public class GameController
 
     @GetMapping( "/leaderboard" )
     @Operation(
-        operationId = "2.2",
+        operationId = "2_2",
         summary = "Get the top users from the leaderboard.",
         description = "Returns a list of users sorted by their score in descending order. You can optionally limit the number of users returned using the `limit` query parameter."
     )
@@ -865,7 +865,7 @@ public class GameController
     @PostMapping( "/claimBonusPoints" )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2.7",
+        operationId = "2_7",
         summary = "Claim bonus points once every 3 hours.",
         description = """
         You can claim +1 bonus point every 3 hours. There is a 50% chance to receive +2 points instead!
