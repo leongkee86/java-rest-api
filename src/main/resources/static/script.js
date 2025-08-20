@@ -1,21 +1,7 @@
 window.onload = function()
 {
     let token = null;
-    let isSorted = false;
 
-    const customOpOrder =
-    [
-        "auth/register",
-        "auth/login",
-        "auth/logout",
-        "game/profile",
-        "game/leaderboard",
-        "game/guessNumber",
-        "game/arrangeNumbers",
-        "game/rockPaperScissors/practise",
-        "game/rockPaperScissors/challenge"
-    ];
-    
     const ui = SwaggerUIBundle(
         {
             url: "swagger.json",
@@ -29,39 +15,11 @@ window.onload = function()
 
             operationsSorter: ( a, b ) =>
             {
-                if (isSorted)
-                {
-                    return;
-                }
-
-                isSorted = true;
-
                 const opIdA = a.get( "operation" )?.get( "operationId" ) || "";
                 const opIdB = b.get( "operation" )?.get( "operationId" ) || "";
-
-                const indexA = customOpOrder.indexOf( opIdA );
-                const indexB = customOpOrder.indexOf( opIdB );
-
-                if (indexA === -1 && indexB === -1)
-                {
-                    // Fallback to alphabetical.
-                    return opIdA.localeCompare( opIdB );
-                }
-
-                if (indexA === -1)
-                {
-                    return 1;
-                }
-
-                if (indexB === -1)
-                {
-                    return -1;
-                }
-
-                return indexA - indexB;
+                return opIdA.localeCompare( opIdB );
             },
 
-            // Add Authorization header if token exists.
             requestInterceptor: function( request )
             {
                 if (token)
@@ -71,8 +29,7 @@ window.onload = function()
 
                 return request;
             },
-
-            // Intercept response to capture token from Login API.
+            
             responseInterceptor: async ( response ) =>
             {
                 if (!response || !response.url)
