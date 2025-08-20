@@ -27,29 +27,23 @@ import java.util.TreeMap;
             
             I have developed the entire set of server-side APIs using **Java**, with **MongoDB** as the underlying database. These APIs are fully documented and available for exploration and interaction via this page.
             
-            You can register for an account, then log in to:
+            Once you have registered and logged in to your account, you will be able to:
             
-              - Play games:
+              - 🎮 Play games: 1. Guess Number | 2. Arrange Numbers | 3. Rock Paper Scissors (Practice and Challenge modes)
                 
-                1. Guess Number
+              - 👤 View your game profile or another user's game profile
                 
-                2. Arrange Numbers
+              - 🏆 Check the leaderboard
                 
-                3. Rock Paper Scissors (practice and challenge modes)
-                
-              - View your game profile or another user's game profile
-                
-              - Check the leaderboard
-                
-            > All API endpoints are interactive and can be tested directly from this page!
-                
-            I also customized this Swagger UI to include the following features:
+            > All API endpoints are interactive and can be tested directly using the **"Try it out"** button located to the right of each endpoint on this page!
             
-            1. **Automatic JWT Handling:** Captures and injects the JWT token after a successful login to enable seamless access to protected endpoints.
+            Additionally, I customized this Swagger UI by integrating my own **HTML** and **JavaScript** files to provide the following features:
             
-            2. **Logout Behavior:** Clears the authorization token on logout to disable access to protected endpoints until you log in again.
+              1. 🔐 **Automatic JWT Handling:** Automatically captures the JWT token upon successful login and injects it into all requests targeting protected endpoints.
             
-            3. **Custom Operation Sorting:** Implements a custom sorting logic for API operations based on a predefined order, making the API navigation more intuitive.
+              2. 🚪 **Logout Behavior:** Clears the JWT token upon logout to prevent access to protected endpoints until the user logs in again.
+            
+              3. 🧩 **Custom Operation Sorting:** API operations are sorted using a custom logic for a cleaner, more intuitive navigation experience.
         
             I would sincerely appreciate any feedback, suggestions, or improvements you might have. Thank you for taking the time to review my work.
             """,
