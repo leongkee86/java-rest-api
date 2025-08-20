@@ -21,6 +21,9 @@ import java.util.List;
 @Configuration
 public class SecurityConfig
 {
+    @Value( "${PUBLIC_URLS}" )
+    private String publicUrls;
+
     @Value( "${ALLOWED_ORIGINS}" )
     private String allowedOrigins;
 
@@ -33,11 +36,7 @@ public class SecurityConfig
         http.csrf( AbstractHttpConfigurer::disable )
             .cors( cors -> {} ) // Enable CORS with an empty customizer.
             .authorizeHttpRequests(
-                    auth -> auth.requestMatchers(
-                        "/api/**",
-                        "/index.html",
-                        "/favicon.ico"
-                    )
+                    auth -> auth.requestMatchers( StringHelper.splitStringToArray( publicUrls, "\\|" ) )
                     .permitAll()
                     .anyRequest()
                     .authenticated()
@@ -54,7 +53,7 @@ public class SecurityConfig
     public CorsConfigurationSource corsConfigurationSource()
     {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins( StringHelper.csvToList( allowedOrigins ) );
+        config.setAllowedOrigins( StringHelper.splitStringToList( allowedOrigins, "\\|" ) );
         config.setAllowedMethods( List.of( "GET", "POST", "PUT", "DELETE", "OPTIONS") );
         config.setAllowedHeaders( List.of( "*") );
         config.setAllowCredentials( true );
