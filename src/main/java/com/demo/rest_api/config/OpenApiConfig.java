@@ -19,7 +19,11 @@ import java.util.List;
         title = "Server APIs (Java + MongoDB)",
         version = "0.0.2",
         description = """
-            ## Hi. I am Lim Leong Kee.
+            ## Hi. I am Lim Leong Kee, the sole designer and developer of this project.
+            
+            - 🖥️ **Backend Tech Stack:** Java | Spring Boot | MongoDB | Docker
+            
+            - 🌐 **Frontend Tech Stack:** Customized Swagger UI | HTML | CSS | JavaScript
             
             I have developed the entire set of server-side APIs using **Java**, with **MongoDB** as the underlying database. These APIs are fully documented and available for exploration and interaction directly on this page.
             
@@ -33,11 +37,11 @@ import java.util.List;
               
               - 🏆 Check the leaderboard
                 
-            > All API endpoints are interactive, always ready to use, and can be tried directly on this page!
+            > All API endpoints are interactive, always ready to use (no "Try it out" button needed), and can be tried out directly on this page!
             
             Additionally, I customized this Swagger UI by integrating my own **HTML**, **CSS**, and **JavaScript** files to provide the following features:
             
-            1. 🔐 Automatically captures the JWT token upon successful login, stores it in localStorage for seamless login on return visits, injects it into all requests targeting protected API endpoints, and updates the Swagger UI authorization dialog to reflect the current authentication state.
+            1. 🔐 Automatically captures the JWT token upon successful login, stores it in local storage for seamless login on return visits, injects it into all requests targeting protected API endpoints, and updates the Swagger UI authorization dialog to reflect the current authentication state.
                 
             2. 🚪 Extended Swagger UI's logout function to mirror the behavior of the logout API endpoint — clearing the stored JWT token, resetting the user's authentication state, and clearing the Swagger UI authorization dialog for consistent logout behavior.
                 
@@ -48,6 +52,8 @@ import java.util.List;
             5. 🧩 Implements custom sorting logic for API operations to improve navigation and make the interface more user-friendly.
             
             I sincerely appreciate any feedback, suggestions, or improvements you may have. Thank you for taking the time to review my work.
+            
+            **My Cocos Creator Projects:** [Space Shooter Game](https://leongkee-space-shooter.onrender.com) | [Thai Hi-Lo Game](https://thaihilo-web.onrender.com) ( Login Details — Username: demo | Password: demo )
             """,
         contact = @Contact(
             name = "Lim Leong Kee",

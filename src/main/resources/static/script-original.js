@@ -119,7 +119,7 @@ window.onload = function()
                     }
                     else if (responseUrl.pathname === logoutApiPath)
                     {
-                        alert( "Logout failed. Please try again." );
+                        alert( "Logout failed. Please make sure you are logged in and try again." );
                     }
                 }
 
