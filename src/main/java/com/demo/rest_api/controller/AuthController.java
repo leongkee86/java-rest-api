@@ -71,7 +71,7 @@ public class AuthController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.BAD_REQUEST.value(),
-                            "username is required",
+                            "Please enter a username.",
                             null,
                             null
                         )
@@ -85,7 +85,7 @@ public class AuthController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.BAD_REQUEST.value(),
-                            "password is required",
+                            "Please enter a password.",
                             null,
                             null
                         )
@@ -99,7 +99,7 @@ public class AuthController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.CONFLICT.value(),
-                            "username already registered",
+                            "The username '" + username + "' is already taken. Please choose a different username.",
                             null,
                             null
                         )
@@ -160,7 +160,7 @@ public class AuthController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.NOT_FOUND.value(),
-                            "username not found",
+                            "Username not found. Please check and try again.",
                             null,
                             null
                         )
@@ -176,7 +176,7 @@ public class AuthController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.UNAUTHORIZED.value(),
-                            "invalid credentials",
+                            "Invalid credentials. Please check and try again.",
                             null,
                             null
                         )

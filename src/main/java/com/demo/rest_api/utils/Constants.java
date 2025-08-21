@@ -7,5 +7,5 @@ public final class Constants
         // private constructor to prevent instantiation
     }
 
-    public static final String DEFAULT_SUCCESS_MESSAGE = "success";
+    public static final String DEFAULT_SUCCESS_MESSAGE = "Request processed successfully.";
 }

@@ -57,7 +57,7 @@ public class GameController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.UNAUTHORIZED.value(),
-                            "invalid token",
+                            "You are not logged in, or your session token is invalid or has expired. Please use the 'api/auth/login' endpoint to log in again.",
                             null,
                             null
                         )
@@ -146,7 +146,7 @@ public class GameController
                     .body(
                         new ServerApiResponse<>(
                             HttpStatus.NOT_FOUND.value(),
-                            "User not found",
+                            "User not found. Please check the username and try again.",
                             null,
                             null
                         )
