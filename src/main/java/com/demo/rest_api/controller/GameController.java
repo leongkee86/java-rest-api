@@ -52,15 +52,9 @@ public class GameController
 
         if (authentication == null || !authentication.isAuthenticated())
         {
-            return ResponseEntity
-                    .status( HttpStatus.UNAUTHORIZED )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.UNAUTHORIZED.value(),
-                            "You are not logged in, or your session token is invalid or has expired. Please use the 'api/auth/login' endpoint to log in again.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.UNAUTHORIZED,
+                    "You are not logged in, or your session token is invalid or has expired. Please use the 'api/auth/login' endpoint to log in again."
                     );
         }
 
@@ -69,15 +63,9 @@ public class GameController
 
         if (userOpt.isEmpty())
         {
-            return ResponseEntity
-                    .status( HttpStatus.NOT_FOUND )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.NOT_FOUND.value(),
-                            "Please use the 'api/auth/login' endpoint to log in first.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.NOT_FOUND,
+                    "Please use the 'api/auth/login' endpoint to log in first."
                     );
         }
 
@@ -123,15 +111,10 @@ public class GameController
             return authResult;
         }
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        Constants.DEFAULT_SUCCESS_MESSAGE,
-                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                Constants.DEFAULT_SUCCESS_MESSAGE,
+                new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                 );
     }
 
@@ -141,29 +124,18 @@ public class GameController
 
         if (optionalUser.isEmpty())
         {
-            return ResponseEntity
-                    .status( HttpStatus.NOT_FOUND )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.NOT_FOUND.value(),
-                            "User not found. Please check the username and try again.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.NOT_FOUND,
+                    "User not found. Please check the username and try again."
                     );
         }
 
         User user = optionalUser.get();
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        Constants.DEFAULT_SUCCESS_MESSAGE,
-                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                Constants.DEFAULT_SUCCESS_MESSAGE,
+                new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                 );
     }
 
@@ -223,15 +195,9 @@ public class GameController
 
         if (yourGuessedNumber < 1 || yourGuessedNumber > 100)
         {
-            return ResponseEntity
-                    .status( HttpStatus.BAD_REQUEST )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "Please enter a number from 1 to 100 in the 'yourGuessedNumber' field.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Please enter a number from 1 to 100 in the 'yourGuessedNumber' field."
                     );
         }
 
@@ -269,15 +235,10 @@ public class GameController
             user.setScore( user.getScore() + 3 );
             userService.save( user );
 
-            return ResponseEntity
-                    .status( HttpStatus.OK )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.OK.value(),
-                            roundNumberString + "Congratulations!!! You have successfully guessed the SECRET number (" + yourGuessedNumber + ") and earned 3 points! Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
-                            new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.OK,
+                    roundNumberString + "Congratulations!!! You have successfully guessed the SECRET number (" + yourGuessedNumber + ") and earned 3 points! Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                    new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                     );
         }
 
@@ -287,15 +248,10 @@ public class GameController
             user.setScore( user.getScore() - 1 );
             userService.save( user );
 
-            return ResponseEntity
-                    .status( HttpStatus.OK )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.OK.value(),
-                            roundNumberString + "You have unfortunately guessed the TRAP number (" + yourGuessedNumber + ") and lost 1 point... Your current score is " + user.getScore() + ". Use this endpoint to continue guessing the BASIC or SECRET number.",
-                            new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.OK,
+                    roundNumberString + "You have unfortunately guessed the TRAP number (" + yourGuessedNumber + ") and lost 1 point... Your current score is " + user.getScore() + ". Use this endpoint to continue guessing the BASIC or SECRET number.",
+                    new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                     );
         }
 
@@ -303,15 +259,10 @@ public class GameController
         {
             userService.save( user );
 
-            return ResponseEntity
-                    .status( HttpStatus.OK )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.OK.value(),
-                            roundNumberString + "Your guessed number (" + yourGuessedNumber + ") is too high! Try again.",
-                            new UserResponse( user ),
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.OK,
+                    roundNumberString + "Your guessed number (" + yourGuessedNumber + ") is too high! Try again.",
+                    new UserResponse( user )
                     );
         }
 
@@ -319,15 +270,10 @@ public class GameController
         {
             userService.save( user );
 
-            return ResponseEntity
-                    .status( HttpStatus.OK )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.OK.value(),
-                            roundNumberString + "Your guessed number (" + yourGuessedNumber + ") is too low! Try again.",
-                            new UserResponse( user ),
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.OK,
+                    roundNumberString + "Your guessed number (" + yourGuessedNumber + ") is too low! Try again.",
+                    new UserResponse( user )
                     );
         }
 
@@ -335,15 +281,10 @@ public class GameController
         user.setScore( user.getScore() + 1 );
         userService.save( user );
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        roundNumberString + "Congratulations! You have successfully guessed the BASIC number (" + yourGuessedNumber + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
-                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                roundNumberString + "Congratulations! You have successfully guessed the BASIC number (" + yourGuessedNumber + ") and earned 1 point. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                 );
     }
 
@@ -406,15 +347,9 @@ public class GameController
 
         if (yourArrangedNumbers.size() != 5)
         {
-            return ResponseEntity
-                    .status( HttpStatus.BAD_REQUEST )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "Please enter the sequence of the 5 numbers (1, 2, 3, 4, 5) defined by the game for the current round in the 'yourGuessedNumber' field. The sequence can be any arrangement of these numbers.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Please enter the sequence of the 5 numbers (1, 2, 3, 4, 5) defined by the game for the current round in the 'yourGuessedNumber' field. The sequence can be any arrangement of these numbers."
                     );
         }
 
@@ -477,15 +412,10 @@ public class GameController
         {
             userService.save( user );
 
-            return ResponseEntity
-                    .status( HttpStatus.OK )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.OK.value(),
-                            roundNumberString + "Here is the hint to help you figure out the sequence of the 5 numbers: " + hint + ". Use this endpoint to try again.",
-                            new UserResponse( user ),
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.OK,
+                    roundNumberString + "Here is the hint to help you figure out the sequence of the 5 numbers: " + hint + ". Use this endpoint to try again.",
+                    new UserResponse( user )
                     );
         }
 
@@ -495,15 +425,10 @@ public class GameController
 
         String result = yourArrangedNumbers.stream().map( String::valueOf ).collect(Collectors.joining( "," ) );
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        roundNumberString + "Congratulations! You have successfully guessed the sequence of the 5 numbers (" + result + ") and earned 2 points. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
-                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                roundNumberString + "Congratulations! You have successfully guessed the sequence of the 5 numbers (" + result + ") and earned 2 points. Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
+                new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                 );
     }
 
@@ -591,15 +516,9 @@ public class GameController
 
         if (opponentUsername == null || opponentUsername.isBlank())
         {
-            return ResponseEntity
-                    .status( HttpStatus.BAD_REQUEST )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "The 'opponentUsername' field cannot be empty.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "The 'opponentUsername' field cannot be empty."
                     );
         }
 
@@ -607,43 +526,25 @@ public class GameController
 
         if (optionalOpponentUser.isEmpty())
         {
-            return ResponseEntity
-                    .status( HttpStatus.NOT_FOUND )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.NOT_FOUND.value(),
-                            "Opponent user not found. Please make sure that you enter the correct username in the 'opponentUsername' field.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.NOT_FOUND,
+                    "Opponent user not found. Please make sure that you enter the correct username in the 'opponentUsername' field."
                     );
         }
 
         if (user.getUsername().equalsIgnoreCase( opponentUsername ))
         {
-            return ResponseEntity
-                    .status( HttpStatus.CONFLICT )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.CONFLICT.value(),
-                            "You cannot choose yourself as your opponent. Please enter a different username in the 'opponentUsername' field.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.CONFLICT,
+                    "You cannot choose yourself as your opponent. Please enter a different username in the 'opponentUsername' field."
                     );
         }
 
         if (pointsToStake <= 0)
         {
-            return ResponseEntity
-                    .status( HttpStatus.BAD_REQUEST )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "The value of the 'pointsToStake' field must be at least 1.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "The value of the 'pointsToStake' field must be at least 1."
                     );
         }
 
@@ -651,29 +552,17 @@ public class GameController
 
         if (pointsToStake > user.getScore())
         {
-            return ResponseEntity
-                    .status( HttpStatus.UNPROCESSABLE_ENTITY )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                            "You cannot stake more points than you currently have (Max: " + user.getScore() + ").",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    "You cannot stake more points than you currently have (Max: " + user.getScore() + ")."
                     );
         }
 
         if (pointsToStake > opponentUser.getScore())
         {
-            return ResponseEntity
-                    .status( HttpStatus.UNPROCESSABLE_ENTITY )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                            "You cannot stake more points than your opponent currently have (Max: " + opponentUser.getScore() + ").",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    "You cannot stake more points than your opponent currently have (Max: " + opponentUser.getScore() + ")."
                     );
         }
 
@@ -722,15 +611,10 @@ public class GameController
         data.put( "user", new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ) );
         data.put( "opponent", new LeaderboardUserResponse( leaderboardService.getUserRank( opponentUser ), opponentUser ) );
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        result + " Your current score is " + opponentUser.getScore() + ". Use this endpoint to play a new round.",
-                        data,
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                result + " Your current score is " + opponentUser.getScore() + ". Use this endpoint to play a new round.",
+                data
                 );
     }
 
@@ -802,15 +686,9 @@ public class GameController
             result += "You lost...";
         }
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        result + " Use this endpoint to play again.",
-                        null,
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                result + " Use this endpoint to play again."
                 );
     }
 
@@ -850,15 +728,10 @@ public class GameController
             rank++;
         }
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        Constants.DEFAULT_SUCCESS_MESSAGE,
-                        leaderboardUsers,
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                Constants.DEFAULT_SUCCESS_MESSAGE,
+                leaderboardUsers
                 );
     }
 
@@ -945,15 +818,9 @@ public class GameController
                     );
                 }
 
-                return ResponseEntity
-                        .status( HttpStatus.TOO_EARLY )
-                        .body(
-                            new ServerApiResponse<>(
-                                HttpStatus.TOO_EARLY.value(),
-                                "Bonus points already claimed. Please try again after " + timeLeftMessage + " to claim your next bonus points.",
-                                null,
-                                null
-                            )
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.TOO_EARLY,
+                        "Bonus points already claimed. Please try again after " + timeLeftMessage + " to claim your next bonus points."
                         );
             }
         }
@@ -969,15 +836,10 @@ public class GameController
                         ? "Bonus points claimed! You received +2 points!"
                         : "Bonus point claimed! You received +1 point.";
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        result + " Your current score is " + user.getScore() + ". Please come back after " + COOLDOWN_HOURS + " hours to claim your next bonus points.",
-                        new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user ),
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                result + " Your current score is " + user.getScore() + ". Please come back after " + COOLDOWN_HOURS + " hours to claim your next bonus points.",
+                new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
                 );
     }
 }

@@ -10,6 +10,11 @@ public class NumberHelper
 {
     public static int getRandomNumber( int min, int max )
     {
+        if (min > max)
+        {
+            throw new IllegalArgumentException( "min should be less than or equal to max." );
+        }
+
         return ThreadLocalRandom.current().nextInt( min, max + 1 );
     }
 

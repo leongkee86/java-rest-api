@@ -66,58 +66,34 @@ public class AuthController
     {
         if (StringHelper.isNullOrEmpty( username ))
         {
-            return ResponseEntity
-                    .status( HttpStatus.BAD_REQUEST )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "Please enter a username.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Please enter a username."
                     );
         }
 
         if (StringHelper.isNullOrEmpty( password ))
         {
-            return ResponseEntity
-                    .status( HttpStatus.BAD_REQUEST )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "Please enter a password.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Please enter a password."
                     );
         }
 
         if (userService.findByUsername( username ).isPresent())
         {
-            return ResponseEntity
-                    .status( HttpStatus.CONFLICT )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.CONFLICT.value(),
-                            "The username '" + username + "' is already taken. Please choose a different username.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.CONFLICT,
+                    "The username '" + username + "' is already taken. Please choose a different username."
                     );
         }
 
         User user = new User( username, password );
         userService.save( user );
 
-        return ResponseEntity
-                .status( HttpStatus.CREATED )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.CREATED.value(),
-                        "Registration successful. Please use the 'api/auth/login' endpoint to log in to your account.",
-                        null,
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.CREATED,
+                "Registration successful. Please use the 'api/auth/login' endpoint to log in to your account."
                 );
     }
 
@@ -157,15 +133,9 @@ public class AuthController
 
         if (userOpt.isEmpty())
         {
-            return ResponseEntity
-                    .status( HttpStatus.NOT_FOUND )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.NOT_FOUND.value(),
-                            "Username not found. Please check and try again.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.NOT_FOUND,
+                    "Username not found. Please check and try again."
                     );
         }
 
@@ -173,15 +143,9 @@ public class AuthController
 
         if (!userService.validatePassword( password, user.getPassword() ))
         {
-            return ResponseEntity
-                    .status( HttpStatus.UNAUTHORIZED )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.UNAUTHORIZED.value(),
-                            "Invalid credentials. Please check and try again.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid credentials. Please check and try again."
                     );
         }
 
@@ -191,15 +155,10 @@ public class AuthController
         data.put( "token", token );
         data.put( "user", new UserResponse( user ) );
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        "Login successful! You have been authorized and can access the protected API endpoints now.",
-                        data,
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                "Login successful! You have been authorized and can access the protected API endpoints now.",
+                data
                 );
     }
 
@@ -222,27 +181,15 @@ public class AuthController
 
         if (authHeader == null)
         {
-            return ResponseEntity
-                    .status( HttpStatus.UNAUTHORIZED )
-                    .body(
-                        new ServerApiResponse<>(
-                            HttpStatus.UNAUTHORIZED.value(),
-                            "You are not logged in.",
-                            null,
-                            null
-                        )
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.UNAUTHORIZED,
+                    "You are not logged in."
                     );
         }
 
-        return ResponseEntity
-                .status( HttpStatus.OK )
-                .body(
-                    new ServerApiResponse<>(
-                        HttpStatus.OK.value(),
-                        "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue.",
-                        null,
-                        null
-                    )
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue."
                 );
     }
 }

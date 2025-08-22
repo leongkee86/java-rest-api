@@ -2,6 +2,8 @@ package com.demo.rest_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @JsonInclude( JsonInclude.Include.NON_NULL )
 @JsonPropertyOrder({ "status", "success", "message", "data", "metadata" })
@@ -70,5 +72,34 @@ public class ServerApiResponse<T>
     public void setMetadata( Object metadata )
     {
         this.metadata = metadata;
+    }
+
+    public static ResponseEntity<?> generateResponseEntity( HttpStatus status )
+    {
+        return  generateResponseEntity( status, "" );
+    }
+
+    public static <T> ResponseEntity<?> generateResponseEntity( HttpStatus status, String message )
+    {
+        return  generateResponseEntity( status, message, null );
+    }
+
+    public static <T> ResponseEntity<?> generateResponseEntity( HttpStatus status, String message, T data )
+    {
+        return generateResponseEntity( status, message, data, null );
+    }
+
+    public static <T> ResponseEntity<?> generateResponseEntity( HttpStatus status, String message, T data, Object metadata )
+    {
+        return ResponseEntity
+                .status( status )
+                .body(
+                    new ServerApiResponse<>(
+                        status.value(),
+                        message,
+                        data,
+                        metadata
+                    )
+                );
     }
 }
