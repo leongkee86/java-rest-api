@@ -6,7 +6,6 @@ import com.demo.rest_api.repository.UserRepository;
 import com.demo.rest_api.dto.ServerApiResponse;
 import com.demo.rest_api.security.JwtUtil;
 import com.demo.rest_api.service.UserService;
-import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.StringHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -128,17 +127,19 @@ public class AuthController
         description = """
             Authenticates a user with username and password.
             
-            On success, returns a JWT access token in the `token` field.
+            Upon successful authentication, a JWT access token is returned in the `token` field.
             
-            **How to use the token in Swagger UI:**
+            <s>**How to use the token in Swagger UI:**</s>
             
-            1. Copy the `token` from the response.
+            <s>1. Copy the `token` from the response.</s>
             
-            2. Click the **Authorize** button (top right in Swagger UI).
+            <s>2. Click the **Authorize** button (top right in Swagger UI).</s>
             
-            3. Paste the token into the `value` input field.
+            <s>3. Paste the token into the `value` input field.</s>
             
-            4. Click **Authorize** — now your requests will include the token.
+            <s>4. Click **Authorize** — now your requests will include the token.</s>
+            
+            **Important:** I have implemented automation that automatically sets the JWT access token in Swagger UI’s Authorization header. As a result, users no longer need to manually click the 'Authorize' button and paste the token.
             """
     )
     @ApiResponses( value =
