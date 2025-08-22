@@ -1,5 +1,6 @@
 package com.demo.rest_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,8 +14,13 @@ public class User
     private ObjectId _id = null;
 
     private String username = "";
+
+    @JsonIgnore
     private String password = "";
+
+    @JsonIgnore
     private boolean isPasswordEncoded = false;
+
     private int score = 0;
     private int attempts = 0;
     private int rounds = 0;
