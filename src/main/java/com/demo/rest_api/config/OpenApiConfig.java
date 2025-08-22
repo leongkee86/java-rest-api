@@ -78,7 +78,8 @@ public class OpenApiConfig
                     new Tag().name( "Game" )
                 ) )
                 .servers( List.of(
-                    new Server().url( "https://leongkee-java-rest-api.onrender.com" ).description( "" )
+                    new Server().url( "http://localhost:8080" ).description( "" )
+//                    new Server().url( "https://leongkee-java-rest-api.onrender.com" ).description( "" )
                 ) );
     }
 }
