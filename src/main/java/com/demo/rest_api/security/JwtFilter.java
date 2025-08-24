@@ -40,6 +40,7 @@ public class JwtFilter extends OncePerRequestFilter
 
             try
             {
+                // Validate the JWT token and return its subject (username).
                 String username = jwtUtil.validateToken( token );
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
@@ -53,6 +54,7 @@ public class JwtFilter extends OncePerRequestFilter
                             userDetails.getAuthorities()
                         );
 
+                    // Set the authenticated user in the SecurityContext.
                     SecurityContextHolder.getContext().setAuthentication( authentication );
                 }
             }

@@ -1,32 +1,51 @@
 package com.demo.rest_api.security;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
 public class JwtUtil
 {
-    @Value( "${JWT_SECRET_KEY}" )
-    private String secretKey;
+    @Autowired
+    private SecretKey jwtSecretKey;
 
+    // Token valid for 1 day.
+    private static final long EXPIRATION_TIME_MS = 24 * 60 * 60 * 1000;
+
+    // Generates a JWT token for the given subject.
     public String generateToken( String subject )
     {
         return Jwts.builder()
                 .setSubject( subject )
                 .setIssuedAt( new Date() )
-                .setExpiration( new Date(System.currentTimeMillis() + 86400000 ) ) // 1 day
-                .signWith( SignatureAlgorithm.HS256, secretKey )
+                .setExpiration( new Date(System.currentTimeMillis() + EXPIRATION_TIME_MS ) )
+                .signWith( jwtSecretKey, SignatureAlgorithm.HS256 )
                 .compact();
     }
 
+    // Validates a JWT token and returns the subject if valid.
+    // Returns null if the token is invalid or expired.
     public String validateToken( String token )
     {
-        return Jwts.parser().setSigningKey( secretKey )
-                .parseClaimsJws( token )
-                .getBody().getSubject();
+        try
+        {
+            return Jwts.parserBuilder()
+                    .setSigningKey(jwtSecretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        }
+        catch ( JwtException e )
+        {
+            // Invalid token (expired, malformed, tampered, etc.)
+            return null;
+        }
     }
 }

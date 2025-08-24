@@ -36,10 +36,10 @@ public class SecurityConfig
         http.csrf( AbstractHttpConfigurer::disable )
             .cors( cors -> {} ) // Enable CORS with an empty customizer.
             .authorizeHttpRequests(
-                    auth -> auth.requestMatchers( StringHelper.splitStringToArray( publicUrls, "\\|" ) )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
+                auth -> auth.requestMatchers( StringHelper.splitStringToArray( publicUrls, "|" ) )
+                .permitAll()
+                .anyRequest()
+                .authenticated()
             )
             .sessionManagement(
                 session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS )
@@ -53,7 +53,7 @@ public class SecurityConfig
     public CorsConfigurationSource corsConfigurationSource()
     {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins( StringHelper.splitStringToList( allowedOrigins, "\\|" ) );
+        config.setAllowedOrigins( StringHelper.splitStringToList( allowedOrigins, "|" ) );
         config.setAllowedMethods( List.of( "GET", "POST", "PUT", "DELETE", "OPTIONS") );
         config.setAllowedHeaders( List.of( "*") );
         config.setAllowCredentials( true );

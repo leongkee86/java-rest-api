@@ -8,6 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberHelper
 {
+    private static final Random RANDOM = new Random();
+
     public static int getRandomNumber( int min, int max )
     {
         if (min > max)
@@ -56,8 +58,6 @@ public class NumberHelper
         return result;
     }
 
-    private static final Random random = new Random();
-
     /**
      * Returns true if the random chance hits based on the given probability.
      * @param probability the chance to hit, from 0.0 (0%) to 1.0 (100%)
@@ -75,6 +75,6 @@ public class NumberHelper
             return true;
         }
 
-        return random.nextDouble() < probability;
+        return ( RANDOM.nextDouble() < probability );
     }
 }

@@ -3,6 +3,7 @@ package com.demo.rest_api.controller;
 import com.demo.rest_api.dto.*;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
+import com.demo.rest_api.service.AuthenticationService;
 import com.demo.rest_api.service.LeaderboardService;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
@@ -20,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,34 +42,10 @@ public class GameController
     private UserRepository userRepository;
 
     @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
     private LeaderboardService leaderboardService;
-
-    private ResponseEntity<?> getAuthenticatedUserOrError()
-    {
-        // At this point, Spring Security should have already set the authenticated user.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated())
-        {
-            return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.UNAUTHORIZED,
-                    "You are not logged in, or your session token is invalid or has expired. Please use the 'api/auth/login' endpoint to log in again."
-                    );
-        }
-
-        String username = authentication.getName();  // from JWT token subject
-        Optional<User> userOpt = userService.findByUsername( username );
-
-        if (userOpt.isEmpty())
-        {
-            return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.NOT_FOUND,
-                    "Please use the 'api/auth/login' endpoint to log in first."
-                    );
-        }
-
-        return ResponseEntity.ok( userOpt.get() );
-    }
 
     @GetMapping( "/profile" )
     @SecurityRequirement( name = "bearerAuth" )
@@ -104,7 +79,7 @@ public class GameController
 
     private ResponseEntity<?> getOwnProfile()
     {
-        ResponseEntity<?> authResult = getAuthenticatedUserOrError();
+        ResponseEntity<?> authResult = authenticationService.getAuthenticatedUserOrError();
 
         if (!( authResult.getBody() instanceof User user ))
         {
@@ -186,7 +161,7 @@ public class GameController
         @RequestParam( defaultValue = "50" ) int yourGuessedNumber
     )
     {
-        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
         if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
@@ -338,7 +313,7 @@ public class GameController
         List<Integer> yourArrangedNumbers
     )
     {
-        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
         if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
@@ -508,7 +483,7 @@ public class GameController
             @RequestParam( defaultValue = "1" ) int pointsToStake
     )
     {
-        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
         if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
@@ -674,7 +649,7 @@ public class GameController
         @RequestParam( defaultValue = "Rock" ) RockPaperScissors yourChoice
     )
     {
-        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
         if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
@@ -780,7 +755,7 @@ public class GameController
     } )
     public ResponseEntity<?> claimBonusPoint()
     {
-        ResponseEntity<?> authenticatedUserOrError = getAuthenticatedUserOrError();
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
         if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {

@@ -149,6 +149,7 @@ public class AuthController
                     );
         }
 
+        // Generate a JWT token using the user's username as the subject.
         String token = jwtUtil.generateToken( user.getUsername() );
 
         Map<String, Object> data = new LinkedHashMap<>();
