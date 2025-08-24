@@ -11,11 +11,18 @@ public class RestApiApplication
     {
         if (System.getenv( "SERVER_PORT" ) == null)
         {
-            // Load .env variables into the system environment
-            Dotenv dotenv = Dotenv.load();
+            // Load variables from the .env file into system properties (only if not already set).
+            Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+
+            // Set all dotenv variables as system properties.
             dotenv.entries().forEach( entry ->
                 {
-                    System.setProperty( entry.getKey(), entry.getValue() );
+                    String key = entry.getKey();
+
+                    if (System.getProperty( key ) == null)
+                    {
+                        System.setProperty( key, entry.getValue() );
+                    }
                 }
             );
         }
