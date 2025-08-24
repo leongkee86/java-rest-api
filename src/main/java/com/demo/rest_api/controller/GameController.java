@@ -145,7 +145,7 @@ public class GameController
         operationId = "2_3",
         summary = "Guess a number from 1 to 100 in this game. Use this endpoint to start a new round or continue the current round to play",
         description = """
-            Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result.
+            Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result of the game.
             
             ### In each round, there are 3 hidden numbers.
             - **Basic Number**: Gives a hint after each wrong guess. If correctly guessed, awards +1 point and complete the round.
@@ -294,7 +294,7 @@ public class GameController
         operationId = "2_4",
         summary = "Guess the sequence of 5 numbers in this game. Use this endpoint to start a new round or continue the current round to play.",
         description = """
-            Guess and enter the sequence of the 5 numbers (1, 2, 3, 4, 5) in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers (For example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result.
+            Guess and enter the sequence of the 5 numbers (1, 2, 3, 4, 5) in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers (For example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result of the game.
             
             ### Hints you will receive after each wrong guess:
             - **[X]**: Number X is at the correct position.
@@ -452,9 +452,9 @@ public class GameController
         operationId = "2_6",
         summary = "Play the Rock Paper Scissors game with another user. Use this endpoint to start a new round or continue the current round to play the game.",
         description = """
-            **Important:** You must have at least 1 point to play this game. You can play other games to earn points or claim bonus points if you have not claimed them yet.
+            **Important:** You must have at least 1 point to play this game. If you do not have enough points, you can play other games to earn points or claim bonus points if you have not claimed them yet.
             
-            1. Choose an opponent by entering the opponent's username in the `opponentUsername` field.
+            1. The `opponentUsername` field is **optional**. You may choose a specific opponent by entering the opponent's username in the `opponentUsername` field or let the system find a random opponent with enough points (see **step 4**) by leaving the `opponentUsername` field empty.
             
             2. Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field.
             > Rock beats Scissors.
@@ -463,7 +463,9 @@ public class GameController
             
             3. Enter how many points that you want to stake in the `pointsToStake` field. If you win, you will receive the staked points from the opponent. If you lose, you will transfer the staked points to the opponent.
             
-            4. Press the **Execute** button and see the result.
+            4. If you leave the `opponentUsername` field empty, the system will automatically select a random opponent whose score is greater than or equal to the number of points that you entered in the `pointsToStake` field.
+            
+            5. Press the **Execute** button and see the result of the game.
             """
     )
     @ApiResponses( value =
@@ -491,10 +493,9 @@ public class GameController
     } )
     public ResponseEntity<?> playRockPaperScissors(
             @Parameter(
-                description = "The username of the opponent that you choose to challenge",
-                required = true
+                description = "The username of the opponent that you choose to challenge"
             )
-            @RequestParam String opponentUsername,
+            @RequestParam( required = false ) String opponentUsername,
             @Parameter(
                 description = "Select your choice",
                 required = true
@@ -514,49 +515,60 @@ public class GameController
             return authenticatedUserOrError;
         }
 
-        if (opponentUsername == null || opponentUsername.isBlank())
+        if (pointsToStake < 1)
         {
             return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.BAD_REQUEST,
-                    "The 'opponentUsername' field cannot be empty."
-                    );
+                HttpStatus.BAD_REQUEST,
+                "The value of the 'pointsToStake' field must be at least 1."
+            );
         }
-
-        Optional<User> optionalOpponentUser = userService.findByUsername( opponentUsername );
-
-        if (optionalOpponentUser.isEmpty())
-        {
-            return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.NOT_FOUND,
-                    "Opponent user not found. Please make sure that you enter the correct username in the 'opponentUsername' field."
-                    );
-        }
-
-        if (user.getUsername().equalsIgnoreCase( opponentUsername ))
-        {
-            return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.CONFLICT,
-                    "You cannot choose yourself as your opponent. Please enter a different username in the 'opponentUsername' field."
-                    );
-        }
-
-        if (pointsToStake <= 0)
-        {
-            return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.BAD_REQUEST,
-                    "The value of the 'pointsToStake' field must be at least 1."
-                    );
-        }
-
-        User opponentUser = optionalOpponentUser.get();
 
         if (pointsToStake > user.getScore())
         {
             return ServerApiResponse.generateResponseEntity(
-                    HttpStatus.UNPROCESSABLE_ENTITY,
-                    "You cannot stake more points than you currently have (Max: " + user.getScore() + ")."
-                    );
+                HttpStatus.UNPROCESSABLE_ENTITY,
+                "You cannot stake more points than you currently have (Max: " + user.getScore() + ")."
+            );
         }
+
+        Optional<User> optionalOpponentUser;
+        User opponentUser = null;
+
+        if (opponentUsername == null || opponentUsername.isBlank())
+        {
+            optionalOpponentUser = userService.findRandomUserWithMinimumScore( pointsToStake, List.of( user.getUsername() ) );
+
+            if (optionalOpponentUser.isEmpty())
+            {
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.NOT_FOUND,
+                        "Opponent user not found. Try to lower down the value in the 'pointsToStake' field."
+                );
+            }
+        }
+        else
+        {
+            if (user.getUsername().equalsIgnoreCase( opponentUsername ))
+            {
+                return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.CONFLICT,
+                    "You cannot choose yourself as your opponent. Please enter a different username in the 'opponentUsername' field."
+                );
+            }
+
+            optionalOpponentUser = userService.findByUsername( opponentUsername );
+
+            if (optionalOpponentUser.isEmpty())
+            {
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.NOT_FOUND,
+                        "Opponent user not found. Please make sure that you enter the correct username in the 'opponentUsername' field."
+                        );
+            }
+        }
+
+        opponentUser = optionalOpponentUser.get();
+        opponentUsername = opponentUser.getUsername();
 
         if (pointsToStake > opponentUser.getScore())
         {
@@ -580,7 +592,7 @@ public class GameController
         RockPaperScissors opponentChoice = EnumHelper.getRandomEnum( RockPaperScissors.class );
 
         String result = "[ ROUND " + user.getRockPaperScissorsCurrentRound() + " ] "
-                        + "Your choice: { " + yourChoice.toString() + " } versus Opponent's choice: { " + opponentChoice.toString() + " } | ";
+                        + "Your choice: { " + yourChoice.toString() + " } versus opponent " + opponentUsername + "'s choice: { " + opponentChoice.toString() + " } | ";
 
         if (yourChoice == opponentChoice)
         {
@@ -588,7 +600,7 @@ public class GameController
         }
         else if (yourChoice.beats( opponentChoice ))
         {
-            result += "Congratulations! You won and received " + pointsToStake + " point(s) from your opponent.";
+            result += "Congratulations! You won and received " + pointsToStake + " point(s) from '" + opponentUsername + "'.";
 
             opponentUser.setScore( opponentUser.getScore() - pointsToStake );
             user.setScore( user.getScore() + pointsToStake );
@@ -598,7 +610,7 @@ public class GameController
         }
         else
         {
-            result += "You lost and transferred " + pointsToStake + " point(s) to your opponent.";
+            result += "You lost and transferred " + pointsToStake + " point(s) to '" + opponentUsername + "' .";
 
             user.setScore( user.getScore() - pointsToStake );
             opponentUser.setScore( opponentUser.getScore() + pointsToStake );
@@ -613,7 +625,7 @@ public class GameController
 
         return ServerApiResponse.generateResponseEntity(
                 HttpStatus.OK,
-                result + " Your current score is " + opponentUser.getScore() + ". Use this endpoint to play a new round.",
+                result + " Your current score is " + user.getScore() + ". Use this endpoint to play a new round.",
                 data
                 );
     }
@@ -628,7 +640,7 @@ public class GameController
             
             Select your choice — Rock, Paper or Scissors — from the drop-down list in the `yourChoice` field. Rock beats Scissors. Scissors beats Paper. Paper beats Rock.
             
-            Then, press the **Execute** button and see the result.
+            Then, press the **Execute** button and see the result of the game.
             """
     )
     @ApiResponses( value =
