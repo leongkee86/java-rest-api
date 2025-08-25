@@ -123,7 +123,7 @@ public class UserApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_2",
+        operationId = "2_3",
         summary = "Change the display name of your account.",
         description = "Change the display name of your account."
     )
@@ -166,7 +166,7 @@ public class UserApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_3",
+        operationId = "2_4",
         summary = "Change the password of your account.",
         description = "Change the password of your account."
     )
@@ -210,7 +210,7 @@ public class UserApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_4",
+        operationId = "2_5",
         summary = "Delete your account permanently.",
         description = "Delete your account permanently."
     )
@@ -250,7 +250,7 @@ public class UserApiBaseController
     @Target( ElementType.METHOD )
     @Retention( RetentionPolicy.RUNTIME )
     @Operation(
-        operationId = "2_5",
+        operationId = "2_2",
         summary = "Get a filtered, sorted, and paginated list of users.",
         description = """
             Retrieves a paginated list of users filtered using **optional** parameters: minimum score (`minimumScore`), maximum score (`maximumScore`), and case-insensitive **username** keyword matching (`usernameKeyword`). Results are sorted in ascending or descending order based on the **required** `sortDirection` parameter.

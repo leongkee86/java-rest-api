@@ -6,6 +6,7 @@ import com.demo.rest_api.enums.SortDirection;
 import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +24,14 @@ public class UserApiController extends UserApiBaseController
         return super.processGettingProfile( username );
     }
 
-    @PutMapping( "/changeDisplayName" )
+    @PutMapping( value = "/changeDisplayName", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @ChangeDisplayNameOperation
     public ResponseEntity<?> changeDisplayName( @RequestBody ChangeDisplayNameRequest request )
     {
         return super.processChangingDisplayName( request.getDisplayName() );
     }
 
-    @PutMapping( "/changePassword" )
+    @PutMapping( value = "/changePassword", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @ChangePasswordOperation
     public ResponseEntity<?> changePassword( @RequestBody ChangePasswordRequest request )
     {

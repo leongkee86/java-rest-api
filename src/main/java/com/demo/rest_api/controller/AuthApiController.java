@@ -1,5 +1,6 @@
 package com.demo.rest_api.controller;
 
+import com.demo.rest_api.dto.LoginRequest;
 import com.demo.rest_api.dto.RegisterRequest;
 import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +25,7 @@ public class AuthApiController extends AuthApiBaseController
 
     @PostMapping( value = "/login", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @LoginOperation
-    public ResponseEntity<?> login( @RequestBody RegisterRequest request )
+    public ResponseEntity<?> login( @RequestBody LoginRequest request )
     {
         return super.processLogin( request.getUsername(), request.getPassword() );
     }

@@ -39,14 +39,14 @@ window.onload = function()
                 }
 
                 let isSuccessful = false;
-                const loginApiPath = "/api/auth/login";
-                const logoutApiPath = "/api/auth/logout";
+                const loginApiPath = "/auth/login";
+                const logoutApiPath = "/auth/logout";
 
                 const responseUrl = new URL( response.url );
 
                 if (response.ok)
                 {
-                    if (responseUrl.pathname === loginApiPath)
+                    if (responseUrl.pathname.includes( loginApiPath ))
                     {
                         const responseData = JSON.parse( response.data )?.data;
 
@@ -70,7 +70,7 @@ window.onload = function()
                             }
                         }
                     }
-                    else if (responseUrl.pathname === logoutApiPath)
+                    else if (responseUrl.pathname.includes( logoutApiPath ))
                     {
                         if (token)
                         {
@@ -113,11 +113,11 @@ window.onload = function()
 
                 if (!isSuccessful)
                 {
-                    if (responseUrl.pathname === loginApiPath)
+                    if (responseUrl.pathname.includes( loginApiPath ))
                     {
                         alert( "Login failed. Please check your credentials and try again." );
                     }
-                    else if (responseUrl.pathname === logoutApiPath)
+                    else if (responseUrl.pathname.includes( logoutApiPath ))
                     {
                         alert( "Logout failed. Please make sure you are logged in and try again." );
                     }
@@ -219,7 +219,9 @@ window.onload = function()
         }
 
         document.getElementById( 'user-info-display' ).innerHTML = ( user )
-            ? `Welcome! You are currently logged in as <strong>"${user.username}"</strong>.<br>Your current score: <strong>${user.score}</strong>`
+            ? `Welcome! You are currently logged in as <strong>"${user.username}"</strong>.`
+                + `<br>Your display name: <strong>${ ( user.displayName ) ? user.displayName : "-" }</strong>`
+                + `<br>Your current score: <strong>${user.score}</strong>`
             : "You are not logged in yet. Please log in to continue.";
     }
 

@@ -18,7 +18,7 @@ import java.util.List;
 @OpenAPIDefinition(
     info = @Info(
         title = "Server APIs (Java + MongoDB)",
-        version = "0.0.2",
+        version = "0.0.3",
         description = """
             ## Hi. I am Lim Leong Kee, the sole designer and developer of this project.
             
@@ -34,10 +34,12 @@ import java.util.List;
               
               - 🎁 Claim your bonus points once they are available
               
+              - 🏆 Check the leaderboard
+              
               - 👤 View your own or any other user's game profiles
               
-              - 🏆 Check the leaderboard
-                
+              - ⚙️ Manage your account settings
+            
             > All API endpoints are interactive, always ready to use (no "Try it out" button needed), and can be tried out directly on this page!
             
             Additionally, I customized this Swagger UI by integrating my own **HTML**, **CSS**, and **JavaScript** files to provide the following features:
