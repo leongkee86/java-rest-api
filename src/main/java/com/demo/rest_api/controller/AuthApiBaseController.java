@@ -2,7 +2,6 @@ package com.demo.rest_api.controller;
 
 import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
-import com.demo.rest_api.repository.UserRepository;
 import com.demo.rest_api.dto.ServerApiResponse;
 import com.demo.rest_api.security.JwtUtil;
 import com.demo.rest_api.service.UserService;
@@ -33,9 +32,6 @@ public class AuthApiBaseController
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Target( ElementType.METHOD )
     @Retention( RetentionPolicy.RUNTIME )
@@ -75,6 +71,22 @@ public class AuthApiBaseController
                     HttpStatus.BAD_REQUEST,
                     "Please enter a password."
                     );
+        }
+
+        if (username.length() < Constants.USERNAME_LENGTH)
+        {
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Username must be at least " + Constants.USERNAME_LENGTH + " characters long."
+            );
+        }
+
+        if (password.length() < Constants.PASSWORD_LENGTH)
+        {
+            return ServerApiResponse.generateResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Password must be at least " + Constants.PASSWORD_LENGTH + " characters long."
+            );
         }
 
         if (userService.findByUsername( username ).isPresent())

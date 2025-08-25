@@ -17,13 +17,6 @@ import java.util.List;
 @Validated
 public class GameTestApiController extends GameApiBaseController
 {
-    @GetMapping( "/profile" )
-    @GetProfileOperation
-    public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
-    {
-        return super.getProfile( username );
-    }
-
     @PostMapping( "/guessNumber" )
     @GuessNumberOperation
     public ResponseEntity<?> guessNumber(

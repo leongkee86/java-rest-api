@@ -9,6 +9,10 @@ public final class Constants
         // private constructor to prevent instantiation
     }
 
+    // Configuration
+    public static final int USERNAME_LENGTH = 3;
+    public static final int PASSWORD_LENGTH = 3;
+
     // Security
     public static final String AUTH_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
@@ -23,4 +27,6 @@ public final class Constants
     public static final String AUTH_API = "Auth APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
     public static final String GAME_API_TEST = "Game APIs — " + QUERY_PARAM_FOR_TESTING_ONLY;
     public static final String GAME_API = "Game APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
+    public static final String USER_API_TEST = "User APIs — " + QUERY_PARAM_FOR_TESTING_ONLY;
+    public static final String USER_API = "User APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
 }

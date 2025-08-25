@@ -75,10 +75,12 @@ public class OpenApiConfig
     {
         return new OpenAPI()
                 .tags( List.of(
-                    new Tag().name( Constants.AUTH_API_TEST),
-                    new Tag().name( Constants.GAME_API_TEST),
-                    new Tag().name( Constants.AUTH_API),
-                    new Tag().name( Constants.GAME_API)
+                    new Tag().name( Constants.AUTH_API_TEST ),
+                    new Tag().name( Constants.USER_API_TEST ),
+                    new Tag().name( Constants.GAME_API_TEST ),
+                    new Tag().name( Constants.AUTH_API ),
+                    new Tag().name( Constants.USER_API ),
+                    new Tag().name( Constants.GAME_API )
                 ) )
                 .servers( List.of(
                     new Server().url( "http://localhost:8080" ).description( "" )

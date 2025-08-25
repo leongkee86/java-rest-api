@@ -4,17 +4,12 @@ import com.demo.rest_api.dto.ArrangeNumbersRequest;
 import com.demo.rest_api.dto.GuessNumberRequest;
 import com.demo.rest_api.dto.PlayRockPaperScissorsRequest;
 import com.demo.rest_api.dto.PractiseRockPaperScissorsRequest;
-import com.demo.rest_api.enums.RockPaperScissors;
 import com.demo.rest_api.utils.Constants;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Size;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping( "/api/game" )
@@ -22,13 +17,6 @@ import java.util.List;
 @Validated
 public class GameApiController extends GameApiBaseController
 {
-    @GetMapping( "/profile" )
-    @GetProfileOperation
-    public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
-    {
-        return super.getProfile( username );
-    }
-
     @PostMapping( value = "/guessNumber", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @GuessNumberOperation
     public ResponseEntity<?> guessNumber( @RequestBody GuessNumberRequest request )
