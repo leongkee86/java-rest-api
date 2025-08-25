@@ -30,4 +30,10 @@ public final class Constants
     public static final String GAME_API = "Game APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
     public static final String USER_API_TEST = "User APIs — " + QUERY_PARAM_FOR_TESTING_ONLY;
     public static final String USER_API = "User APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
+
+    // Key
+    public static final String DATABASE_USER_USERNAME_KEY = "username";
+    public static final String DATABASE_USER_SCORE_KEY = "score";
+    public static final String DATABASE_USER_ATTEMPTS_KEY = "attempts";
+    public static final String DATABASE_USER_ROUNDS_KEY = "rounds";
 }

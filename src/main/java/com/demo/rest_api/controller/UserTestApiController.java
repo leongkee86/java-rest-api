@@ -1,5 +1,6 @@
 package com.demo.rest_api.controller;
 
+import com.demo.rest_api.enums.SortDirection;
 import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -52,5 +53,17 @@ public class UserTestApiController extends UserApiBaseController
     public ResponseEntity<?> deleteAccount()
     {
         return super.processDeletingAccount();
+    }
+
+    @GetMapping( "/filterAndSort" )
+    @FilterAndSortOperation
+    public ResponseEntity<?> filterAndSort(
+        @RequestParam( required = false ) Integer minimumScore,
+        @RequestParam( required = false ) Integer maximumScore,
+        @RequestParam( required = false ) String usernameKeyword,
+        @RequestParam( required = false, defaultValue = "Ascending" ) SortDirection sortDirection,
+        @RequestParam( required = false ) Integer limit )
+    {
+        return super.processFilteringAndSorting( minimumScore, maximumScore, usernameKeyword, sortDirection, limit );
     }
 }

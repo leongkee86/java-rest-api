@@ -2,6 +2,7 @@ package com.demo.rest_api.service;
 
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
+import com.demo.rest_api.utils.Constants;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +84,8 @@ public class UserService implements UserDetailsService
     {
         Aggregation aggregation = Aggregation.newAggregation(
             match(
-                Criteria.where( "score" ).gte( minimumScore ) // Only include MongoDB documents where the "score" field is 'greater than or equal to' (gte) the value of "minimumScore".
-                .and( "username" ).nin( excludedUsernames ) // Exclude usernames in the list.
+                Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).gte( minimumScore ) // Only include MongoDB documents where the "score" field is 'greater than or equal to' (gte) the value of "minimumScore".
+                .and( Constants.DATABASE_USER_USERNAME_KEY ).nin( excludedUsernames )   // Exclude usernames in the list.
             ),
             sample( 1 )
         );

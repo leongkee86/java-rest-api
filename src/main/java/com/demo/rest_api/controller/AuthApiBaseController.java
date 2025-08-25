@@ -163,7 +163,7 @@ public class AuthApiBaseController
         // Generate a JWT token using the user's username as the subject.
         String token = jwtUtil.generateToken( user.getUsername() );
 
-        Map<String, Object> data = new LinkedHashMap<>();
+        Map<String,Object> data = new LinkedHashMap<>();
         data.put( "token", token );
         data.put( "user", new UserResponse( user ) );
 

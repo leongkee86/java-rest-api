@@ -1,6 +1,7 @@
 package com.demo.rest_api.service;
 
 import com.demo.rest_api.model.User;
+import com.demo.rest_api.utils.Constants;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -21,15 +22,15 @@ public class LeaderboardService
         Query query = new Query();
 
         Criteria betterRank = new Criteria().orOperator(
-                Criteria.where( "score" ).gt( user.getScore() ),
+                Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).gt( user.getScore() ),
                 new Criteria().andOperator(
-                        Criteria.where( "score" ).is( user.getScore() ),
-                        Criteria.where( "attempts" ).lt( user.getAttempts() )
+                        Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).is( user.getScore() ),
+                        Criteria.where( Constants.DATABASE_USER_ATTEMPTS_KEY ).lt( user.getAttempts() )
                 ),
                 new Criteria().andOperator(
-                        Criteria.where( "score" ).is( user.getScore() ),
-                        Criteria.where( "attempts" ).is( user.getAttempts() ),
-                        Criteria.where( "rounds" ).lt( user.getRounds() )
+                        Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).is( user.getScore() ),
+                        Criteria.where( Constants.DATABASE_USER_ATTEMPTS_KEY ).is( user.getAttempts() ),
+                        Criteria.where( Constants.DATABASE_USER_ROUNDS_KEY ).lt( user.getRounds() )
                 )
         );
 

@@ -48,6 +48,60 @@ public class GameApiBaseController
 
     @Target( ElementType.METHOD )
     @Retention( RetentionPolicy.RUNTIME )
+    @Operation(
+        operationId = "3_1",
+        summary = "Get the top users from the leaderboard.",
+        description = "Retrieves a list of users sorted by their score in descending order. You can optionally limit the number of users returned using the `limit` query parameter."
+    )
+    @ApiResponses( value =
+    {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content( mediaType = "" )
+        )
+    } )
+    public @interface GetLeaderboardOperation {}
+
+    public ResponseEntity<?> processGettingLeaderboard( Integer limit )
+    {
+        List<User> users = userRepository.findAll(
+                    Sort.by(
+                        Sort.Order.desc( Constants.DATABASE_USER_SCORE_KEY ),   // Highest score first.
+                        Sort.Order.asc( Constants.DATABASE_USER_ATTEMPTS_KEY ), // If scores equal, fewer attempts first.
+                        Sort.Order.asc( Constants.DATABASE_USER_ROUNDS_KEY )    // If both equal, lower rounds first.
+                    )
+                )
+                .stream()
+                .limit( ( limit != null ) ? limit : Long.MAX_VALUE )
+                .toList();
+
+        List<LeaderboardUserResponse> leaderboardUsers = new ArrayList<>();
+
+        if (!users.isEmpty())
+        {
+            long rank = 1;
+            for (User user : users)
+            {
+                leaderboardUsers.add( new LeaderboardUserResponse( rank, user ) );
+                rank++;
+            }
+        }
+
+        Map<String,Object> metadata = new LinkedHashMap<>();
+        metadata.put( "totalUsers", userRepository.count() );
+        metadata.put( "matchedCount", leaderboardUsers.size() );
+
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                Constants.DEFAULT_SUCCESS_MESSAGE,
+                leaderboardUsers,
+                metadata
+        );
+    }
+
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "3_2",
@@ -571,52 +625,6 @@ public class GameApiBaseController
         return ServerApiResponse.generateResponseEntity(
                 HttpStatus.OK,
                 result + " Use this endpoint to play again."
-                );
-    }
-
-    @Target( ElementType.METHOD )
-    @Retention( RetentionPolicy.RUNTIME )
-    @Operation(
-        operationId = "3_1",
-        summary = "Get the top users from the leaderboard.",
-        description = "Returns a list of users sorted by their score in descending order. You can optionally limit the number of users returned using the `limit` query parameter."
-    )
-    @ApiResponses( value =
-    {
-        @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content( mediaType = "" )
-        )
-    } )
-    public @interface GetLeaderboardOperation {}
-
-    public ResponseEntity<?> processGettingLeaderboard( int limit )
-    {
-        List<User> users = userRepository.findAll(
-                                Sort.by(
-                                    Sort.Order.desc( "score" ),     // highest score first
-                                    Sort.Order.asc( "attempts" ),   // if scores equal, fewer attempts first
-                                    Sort.Order.asc( "rounds" )       // if both equal, lower rounds first
-                                )
-                            )
-                            .stream()
-                            .limit( limit )
-                            .toList();
-
-        List<LeaderboardUserResponse> leaderboardUsers = new ArrayList<>();
-
-        long rank = 1;
-        for (User user : users)
-        {
-            leaderboardUsers.add( new LeaderboardUserResponse( rank, user ) );
-            rank++;
-        }
-
-        return ServerApiResponse.generateResponseEntity(
-                HttpStatus.OK,
-                Constants.DEFAULT_SUCCESS_MESSAGE,
-                leaderboardUsers
                 );
     }
 

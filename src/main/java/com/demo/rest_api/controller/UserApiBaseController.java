@@ -3,17 +3,24 @@ package com.demo.rest_api.controller;
 import com.demo.rest_api.dto.LeaderboardUserResponse;
 import com.demo.rest_api.dto.ServerApiResponse;
 import com.demo.rest_api.dto.UserResponse;
+import com.demo.rest_api.enums.SortDirection;
 import com.demo.rest_api.model.User;
+import com.demo.rest_api.repository.UserRepository;
 import com.demo.rest_api.service.AuthenticationService;
 import com.demo.rest_api.service.LeaderboardService;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
+import com.demo.rest_api.utils.StringHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -21,7 +28,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class UserApiBaseController
 {
@@ -29,10 +37,16 @@ public class UserApiBaseController
     private UserService userService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private AuthenticationService authenticationService;
 
     @Autowired
     private LeaderboardService leaderboardService;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Target( ElementType.METHOD )
     @Retention( RetentionPolicy.RUNTIME )
@@ -195,7 +209,7 @@ public class UserApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_3",
+        operationId = "2_4",
         summary = "Delete your account permanently.",
         description = "Delete your account permanently."
     )
@@ -229,6 +243,79 @@ public class UserApiBaseController
         return ServerApiResponse.generateResponseEntity(
             HttpStatus.OK,
             "Your account with the username '" + username + "' has been successfully deleted."
+        );
+    }
+
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
+    @Operation(
+        operationId = "2_5",
+        summary = "Get a filtered and sorted list of users.",
+        description = "Retrieves a list of users filtered using **optional** parameters for minimum score (`minimumScore`), maximum score (`maximumScore`), username keyword matching (`keyword`), and result limit (`limit`), and sorted in ascending or descending order based on the `sortDirection` parameter."
+    )
+    @ApiResponses( value =
+    {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content( mediaType = "" )
+        )
+    } )
+    public @interface FilterAndSortOperation {}
+
+    public ResponseEntity<?> processFilteringAndSorting( Integer minimumScore, Integer maximumScore, String usernameKeyword, SortDirection sortDirection, Integer limit )
+    {
+        Query query = new Query();
+
+        if (minimumScore != null && maximumScore != null)
+        {
+            query.addCriteria( Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).gte( minimumScore ).lte( maximumScore ) );
+        }
+        else if (minimumScore != null)
+        {
+            query.addCriteria( Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).gte( minimumScore ) );
+        }
+        else if (maximumScore != null)
+        {
+            query.addCriteria( Criteria.where( Constants.DATABASE_USER_SCORE_KEY ).lte( maximumScore ) );
+        }
+
+        if (!StringHelper.isBlank( usernameKeyword ))
+        {
+            query.addCriteria(
+                Criteria.where( Constants.DATABASE_USER_USERNAME_KEY )
+                    .regex( ".*" + Pattern.quote( usernameKeyword.trim() ) + ".*", "i" )
+            );
+        }
+
+        Sort.Direction direction = sortDirection.toSpringSort();
+        query.with( Sort.by( direction, Constants.DATABASE_USER_SCORE_KEY ) );
+
+        if (limit != null)
+        {
+            query.limit( limit );
+        }
+
+        List<User> users = mongoTemplate.find( query, User.class );
+        List<UserResponse> responseUsers = new ArrayList<>();
+
+        if (!users.isEmpty())
+        {
+            for (User user : users)
+            {
+                responseUsers.add( new UserResponse( user ) );
+            }
+        }
+
+        Map<String,Object> metadata = new LinkedHashMap<>();
+        metadata.put( "totalUsers", userRepository.count() );
+        metadata.put( "matchedCount", responseUsers.size() );
+
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                Constants.DEFAULT_SUCCESS_MESSAGE,
+                responseUsers,
+                metadata
         );
     }
 }
