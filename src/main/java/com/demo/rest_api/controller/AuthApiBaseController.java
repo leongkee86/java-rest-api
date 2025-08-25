@@ -45,6 +45,8 @@ public class AuthApiBaseController
             - `username` (unique)
             - `password`
             
+            The `displayName` field is **optional**. If it is missing or empty, the `username` will be used as the `displayName`.
+            
             > Once registered successfully, you can log in using the `/api/auth/login` endpoint to receive a JWT token.
             """
     )
@@ -55,7 +57,7 @@ public class AuthApiBaseController
     )
     public @interface RegisterOperation {}
 
-    protected ResponseEntity<?> register( String username, String password )
+    protected ResponseEntity<?> processRegistration(String username, String password, String displayName )
     {
         if (StringHelper.isNullOrEmpty( username ))
         {
@@ -97,7 +99,7 @@ public class AuthApiBaseController
                     );
         }
 
-        User user = new User( username, password );
+        User user = new User( username, password, ( StringHelper.isBlank( displayName ) ? username : displayName ) );
         userService.save( user );
 
         return ServerApiResponse.generateResponseEntity(
@@ -136,7 +138,7 @@ public class AuthApiBaseController
     )
     public @interface LoginOperation {}
 
-    protected ResponseEntity<?> login( String username, String password )
+    protected ResponseEntity<?> processLogin(String username, String password )
     {
         Optional<User> userOpt = userService.findByUsername( username );
 
@@ -188,7 +190,7 @@ public class AuthApiBaseController
     )
     public @interface LogoutOperation {}
 
-    protected ResponseEntity<?> logout( HttpServletRequest request )
+    protected ResponseEntity<?> processLogout( HttpServletRequest request )
     {
         String authHeader = request.getHeader( Constants.AUTH_HEADER );
 

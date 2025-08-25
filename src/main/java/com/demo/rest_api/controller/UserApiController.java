@@ -1,13 +1,12 @@
 package com.demo.rest_api.controller;
 
+import com.demo.rest_api.dto.ChangeDisplayNameRequest;
+import com.demo.rest_api.dto.ChangePasswordRequest;
 import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping( "/api/user" )
@@ -19,6 +18,27 @@ public class UserApiController extends UserApiBaseController
     @UserApiBaseController.GetProfileOperation
     public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
     {
-        return super.getProfile( username );
+        return super.processGettingProfile( username );
+    }
+
+    @PutMapping( "/changeDisplayName" )
+    @ChangeDisplayNameOperation
+    public ResponseEntity<?> changeDisplayName( @RequestBody ChangeDisplayNameRequest request )
+    {
+        return super.processChangingDisplayName( request.getDisplayName() );
+    }
+
+    @PutMapping( "/changePassword" )
+    @ChangePasswordOperation
+    public ResponseEntity<?> changePassword( @RequestBody ChangePasswordRequest request )
+    {
+        return super.processChangingPassword( request.getPassword() );
+    }
+
+    @DeleteMapping( "/deleteAccount" )
+    @DeleteAccountOperation
+    public ResponseEntity<?> deleteAccount()
+    {
+        return super.processDeletingAccount();
     }
 }

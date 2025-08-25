@@ -27,7 +27,7 @@ public class GameTestApiController extends GameApiBaseController
         @RequestParam( defaultValue = "50" ) int yourGuessedNumber
     )
     {
-        return super.guessNumber( yourGuessedNumber );
+        return super.processGuessingNumber( yourGuessedNumber );
     }
 
     @PostMapping( "/arrangeNumbers" )
@@ -42,7 +42,7 @@ public class GameTestApiController extends GameApiBaseController
         List<Integer> yourArrangedNumbers
     )
     {
-        return super.arrangeNumbers( yourArrangedNumbers );
+        return super.processArrangingNumbers( yourArrangedNumbers );
     }
 
     @PostMapping( "/rockPaperScissors/challenge" )
@@ -64,7 +64,7 @@ public class GameTestApiController extends GameApiBaseController
         @RequestParam( defaultValue = "1" ) int pointsToStake
     )
     {
-        return super.playRockPaperScissors( opponentUsername, yourChoice, pointsToStake );
+        return super.processPlayingRockPaperScissors( opponentUsername, yourChoice, pointsToStake );
     }
 
     @PostMapping( "/rockPaperScissors/practise" )
@@ -77,20 +77,20 @@ public class GameTestApiController extends GameApiBaseController
         @RequestParam( defaultValue = "Rock" ) RockPaperScissors yourChoice
     )
     {
-        return super.practiseRockPaperScissors( yourChoice );
+        return super.processPractisingRockPaperScissors( yourChoice );
     }
 
     @GetMapping( "/leaderboard" )
     @GetLeaderboardOperation
-    public ResponseEntity<?> getLeaderboard( @RequestParam( defaultValue = "100" ) int limit )
+    public ResponseEntity<?> getLeaderboard(@RequestParam( defaultValue = "100" ) int limit )
     {
-        return super.getLeaderboard( limit );
+        return super.processGettingLeaderboard( limit );
     }
 
     @PostMapping( "/claimBonusPoints" )
     @ClaimBonusPointOperation
-    public ResponseEntity<?> claimBonusPoint()
+    public ResponseEntity<?> claimBonusPoints()
     {
-        return super.claimBonusPoint();
+        return super.processClaimingBonusPoints();
     }
 }

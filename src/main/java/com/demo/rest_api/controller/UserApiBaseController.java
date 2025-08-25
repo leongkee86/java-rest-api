@@ -2,6 +2,7 @@ package com.demo.rest_api.controller;
 
 import com.demo.rest_api.dto.LeaderboardUserResponse;
 import com.demo.rest_api.dto.ServerApiResponse;
+import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.service.AuthenticationService;
 import com.demo.rest_api.service.LeaderboardService;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -55,7 +55,7 @@ public class UserApiBaseController
     )
     public @interface GetProfileOperation {}
 
-    protected ResponseEntity<?> getProfile(@RequestParam( required = false ) String username )
+    protected ResponseEntity<?> processGettingProfile( String username )
     {
         if (username != null && !username.isBlank())
         {
@@ -69,11 +69,11 @@ public class UserApiBaseController
 
     private ResponseEntity<?> getOwnProfile()
     {
-        ResponseEntity<?> authResult = authenticationService.getAuthenticatedUserOrError();
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
-        if (!( authResult.getBody() instanceof User user ))
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
         {
-            return authResult;
+            return authenticatedUserOrError;
         }
 
         return ServerApiResponse.generateResponseEntity(
@@ -101,6 +101,134 @@ public class UserApiBaseController
                 HttpStatus.OK,
                 Constants.DEFAULT_SUCCESS_MESSAGE,
                 new LeaderboardUserResponse( leaderboardService.getUserRank( user ), user )
+        );
+    }
+
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        operationId = "2_2",
+        summary = "Change the display name of your account.",
+        description = "Change the display name of your account."
+    )
+    @ApiResponses( value =
+        {
+            @ApiResponse( responseCode = "200", description = "OK", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) )
+        }
+    )
+    public @interface ChangeDisplayNameOperation {}
+
+    protected ResponseEntity<?> processChangingDisplayName( String displayName )
+    {
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
+        {
+            return authenticatedUserOrError;
+        }
+
+        if (displayName.length() < Constants.DISPLAY_NAME_LENGTH)
+        {
+            return ServerApiResponse.generateResponseEntity(
+                HttpStatus.BAD_REQUEST,
+                "Display name must be at least " + Constants.DISPLAY_NAME_LENGTH + " characters long."
+            );
+        }
+
+        user.setDisplayName( displayName );
+        userService.save( user );
+
+        return ServerApiResponse.generateResponseEntity(
+                HttpStatus.OK,
+                "The display name of your account has been successfully changed.",
+                new UserResponse( user )
+        );
+    }
+
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        operationId = "2_3",
+        summary = "Change the password of your account.",
+        description = "Change the password of your account."
+    )
+    @ApiResponses( value =
+        {
+            @ApiResponse( responseCode = "200", description = "OK", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) )
+        }
+    )
+    public @interface ChangePasswordOperation {}
+
+    protected ResponseEntity<?> processChangingPassword( String password )
+    {
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
+        {
+            return authenticatedUserOrError;
+        }
+
+        if (password.length() < Constants.PASSWORD_LENGTH)
+        {
+            return ServerApiResponse.generateResponseEntity(
+                HttpStatus.BAD_REQUEST,
+                "Password must be at least " + Constants.PASSWORD_LENGTH + " characters long."
+            );
+        }
+
+        user.setPassword( password );
+        user.setIsPasswordEncoded( false );
+        userService.save( user );
+
+        return ServerApiResponse.generateResponseEntity(
+            HttpStatus.OK,
+                "The password of your account has been successfully changed.",
+            new UserResponse( user )
+        );
+    }
+
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
+    @SecurityRequirement( name = "bearerAuth" )
+    @Operation(
+        operationId = "2_3",
+        summary = "Delete your account permanently.",
+        description = "Delete your account permanently."
+    )
+    @ApiResponses( value =
+        {
+            @ApiResponse( responseCode = "200", description = "OK", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) )
+        }
+    )
+    public @interface DeleteAccountOperation {}
+
+    protected ResponseEntity<?> processDeletingAccount()
+    {
+        ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
+
+        if (!( authenticatedUserOrError.getBody() instanceof User user ))
+        {
+            return authenticatedUserOrError;
+        }
+
+        String username = user.getUsername();
+
+        if (!userService.deleteUserByUsername( username ))
+        {
+            return ServerApiResponse.generateResponseEntity(
+                HttpStatus.NOT_FOUND,
+                "User not found. Unable to delete your account with the username '" + username + "'."
+            );
+        }
+
+        return ServerApiResponse.generateResponseEntity(
+            HttpStatus.OK,
+            "Your account with the username '" + username + "' has been successfully deleted."
         );
     }
 }

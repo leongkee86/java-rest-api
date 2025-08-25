@@ -12,4 +12,8 @@ public interface UserRepository extends MongoRepository<User,String>
 
     @Query( "{ 'username' : { $regex: ?0, $options: 'i' } }" )
     Optional<User> findByUsernameRegex( String regex );
+
+    boolean existsByUsername(String username);
+
+    void deleteByUsername( String username );
 }

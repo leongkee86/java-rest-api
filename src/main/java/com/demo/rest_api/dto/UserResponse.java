@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 public class UserResponse
 {
     private String username;
+    private String displayName;
     private int score;
     private int attempts = 0;
     private int rounds = 0;
@@ -16,6 +17,7 @@ public class UserResponse
     public UserResponse( User user )
     {
         username = user.getUsername();
+        displayName = user.getDisplayName();
         score = user.getScore();
         attempts = user.getAttempts();
         rounds = user.getRounds();

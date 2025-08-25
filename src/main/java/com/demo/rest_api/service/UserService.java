@@ -34,12 +34,6 @@ public class UserService implements UserDetailsService
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public Optional<User> findByUsername( String username )
-    {
-        String regex = "^" + Pattern.quote( username ) + "$"; // Ignore case.
-        return userRepository.findByUsernameRegex( regex );
-    }
-
     public void save( User user )
     {
         if (!user.getIsPasswordEncoded())
@@ -56,6 +50,12 @@ public class UserService implements UserDetailsService
         return passwordEncoder.matches( rawPassword, encodedPassword );
     }
 
+    public Optional<User> findByUsername( String username )
+    {
+        String regex = "^" + Pattern.quote( username ) + "$"; // Ignore case.
+        return userRepository.findByUsernameRegex( regex );
+    }
+
     @Override
     public @Nonnull UserDetails loadUserByUsername( @Nonnull String username ) throws UsernameNotFoundException
     {
@@ -66,6 +66,17 @@ public class UserService implements UserDetailsService
                     Collections.emptyList() // No roles or authorities.
                 ) )
                 .orElseThrow( () -> new UsernameNotFoundException( "User not found: " + username ) );
+    }
+
+    public boolean deleteUserByUsername( String username )
+    {
+        if (userRepository.existsByUsername( username ))
+        {
+            userRepository.deleteByUsername( username );
+            return true;
+        }
+
+        return false;
     }
 
     public Optional<User> findRandomUserWithMinimumScore( int minimumScore, List<String> excludedUsernames )

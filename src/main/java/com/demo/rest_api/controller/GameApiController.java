@@ -21,41 +21,41 @@ public class GameApiController extends GameApiBaseController
     @GuessNumberOperation
     public ResponseEntity<?> guessNumber( @RequestBody GuessNumberRequest request )
     {
-        return super.guessNumber( request.getYourGuessedNumber() );
+        return super.processGuessingNumber( request.getYourGuessedNumber() );
     }
 
     @PostMapping( value = "/arrangeNumbers", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @ArrangeNumbersOperation
     public ResponseEntity<?> arrangeNumbers( @RequestBody ArrangeNumbersRequest request )
     {
-        return super.arrangeNumbers( request.getYourArrangedNumbers() );
+        return super.processArrangingNumbers( request.getYourArrangedNumbers() );
     }
 
     @PostMapping( value = "/rockPaperScissors/challenge", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @PlayRockPaperScissorsOperation
     public ResponseEntity<?> playRockPaperScissors( @RequestBody PlayRockPaperScissorsRequest request )
     {
-        return super.playRockPaperScissors( request.getOpponentUsername(), request.getYourChoice(), request.getPointsToStake() );
+        return super.processPlayingRockPaperScissors( request.getOpponentUsername(), request.getYourChoice(), request.getPointsToStake() );
     }
 
     @PostMapping( value = "/rockPaperScissors/practise", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @PractiseRockPaperScissorsOperation
     public ResponseEntity<?> practiseRockPaperScissors( @RequestBody PractiseRockPaperScissorsRequest request )
     {
-        return super.practiseRockPaperScissors( request.getYourChoice() );
+        return super.processPractisingRockPaperScissors( request.getYourChoice() );
     }
 
     @GetMapping( "/leaderboard" )
     @GetLeaderboardOperation
     public ResponseEntity<?> getLeaderboard( @RequestParam( defaultValue = "100" ) int limit )
     {
-        return super.getLeaderboard( limit );
+        return super.processGettingLeaderboard( limit );
     }
 
     @PostMapping( "/claimBonusPoints" )
     @ClaimBonusPointOperation
-    public ResponseEntity<?> claimBonusPoint()
+    public ResponseEntity<?> claimBonusPoints()
     {
-        return super.claimBonusPoint();
+        return super.processClaimingBonusPoints();
     }
 }

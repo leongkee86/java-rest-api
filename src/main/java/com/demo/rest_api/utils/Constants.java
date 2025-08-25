@@ -12,6 +12,7 @@ public final class Constants
     // Configuration
     public static final int USERNAME_LENGTH = 3;
     public static final int PASSWORD_LENGTH = 3;
+    public static final int DISPLAY_NAME_LENGTH = 3;
 
     // Security
     public static final String AUTH_HEADER = "Authorization";

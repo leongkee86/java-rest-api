@@ -21,6 +21,7 @@ public class User
     @JsonIgnore
     private boolean isPasswordEncoded = false;
 
+    private String displayName = "";
     private int score = 0;
     private int attempts = 0;
     private int rounds = 0;
@@ -40,11 +41,13 @@ public class User
 
     private int rockPaperScissorsCurrentRound = 0;
 
-    public User( String username, String password )
+    public User( String username, String password, String displayName )
     {
         this._id = new ObjectId();
         this.username = username;
         this.password = password;
+        this.isPasswordEncoded = false;
+        this.displayName = displayName;
         this.score = 0;
     }
 
@@ -71,6 +74,16 @@ public class User
     public boolean getIsPasswordEncoded()
     {
         return this.isPasswordEncoded;
+    }
+
+    public void setDisplayName( String displayName )
+    {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName()
+    {
+        return displayName;
     }
 
     public void setScore( int score )

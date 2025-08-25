@@ -1,6 +1,6 @@
 package com.demo.rest_api.controller;
 
-import com.demo.rest_api.dto.RegisterLoginRequest;
+import com.demo.rest_api.dto.RegisterRequest;
 import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,22 +17,22 @@ public class AuthApiController extends AuthApiBaseController
 {
     @PostMapping( value = "/register", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @RegisterOperation
-    public ResponseEntity<?> register( @RequestBody RegisterLoginRequest request )
+    public ResponseEntity<?> register( @RequestBody RegisterRequest request )
     {
-        return super.register( request.getUsername(), request.getPassword() );
+        return super.processRegistration( request.getUsername(), request.getPassword(), request.getDisplayName() );
     }
 
     @PostMapping( value = "/login", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
     @LoginOperation
-    public ResponseEntity<?> login( @RequestBody RegisterLoginRequest request )
+    public ResponseEntity<?> login( @RequestBody RegisterRequest request )
     {
-        return super.login( request.getUsername(), request.getPassword() );
+        return super.processLogin( request.getUsername(), request.getPassword() );
     }
 
     @PostMapping( "/logout" )
     @LogoutOperation
     protected ResponseEntity<?> logout( HttpServletRequest request )
     {
-        return super.logout( request );
+        return super.processLogout( request );
     }
 }

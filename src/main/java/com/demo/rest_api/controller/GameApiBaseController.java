@@ -50,7 +50,7 @@ public class GameApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_3",
+        operationId = "3_2",
         summary = "Guess a number from 1 to 100 in this game. Use this endpoint to start a new round or continue the current round to play",
         description = """
             Guess and enter a number **from 1 to 100** in the `yourGuessedNumber` field. Then, press the **Execute** button and see the result of the game.
@@ -88,7 +88,7 @@ public class GameApiBaseController
     } )
     public @interface GuessNumberOperation {}
 
-    protected ResponseEntity<?> guessNumber( int yourGuessedNumber )
+    protected ResponseEntity<?> processGuessingNumber( int yourGuessedNumber )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -196,7 +196,7 @@ public class GameApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_4",
+        operationId = "3_3",
         summary = "Guess the sequence of 5 numbers in this game. Use this endpoint to start a new round or continue the current round to play.",
         description = """
             Guess and enter the sequence of the 5 numbers (1, 2, 3, 4, 5) in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers (For example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result of the game.
@@ -235,15 +235,7 @@ public class GameApiBaseController
     } )
     public @interface ArrangeNumbersOperation {}
 
-    protected ResponseEntity<?> arrangeNumbers(
-        @Parameter(
-            description = "Guess the sequence of the 5 numbers defined by the game for the current round",
-            required = true
-        )
-        @RequestParam( defaultValue = "1,2,3,4,5" )
-        @Size( min = 5, max = 5, message = "You must provide exactly 5 numbers" )
-        List<Integer> yourArrangedNumbers
-    )
+    protected ResponseEntity<?> processArrangingNumbers( List<Integer> yourArrangedNumbers )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -343,7 +335,7 @@ public class GameApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_6",
+        operationId = "3_5",
         summary = "Play the Rock Paper Scissors game with another user. Use this endpoint to start a new round or continue the current round to play the game.",
         description = """
             **Important:** You must have at least 1 point to play this game. If you do not have enough points, you can play other games to earn points or claim bonus points if you have not claimed them yet.
@@ -387,7 +379,7 @@ public class GameApiBaseController
     } )
     public @interface PlayRockPaperScissorsOperation {}
 
-    public ResponseEntity<?> playRockPaperScissors( String opponentUsername, RockPaperScissors yourChoice, int pointsToStake )
+    public ResponseEntity<?> processPlayingRockPaperScissors( String opponentUsername, RockPaperScissors yourChoice, int pointsToStake )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -515,7 +507,7 @@ public class GameApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_5",
+        operationId = "3_4",
         summary = "Practise the Rock Paper Scissors game for fun.",
         description = """
             Practise the Rock Paper Scissors game for fun. No points to earn. The number of attempts will not increase with each play.
@@ -550,7 +542,7 @@ public class GameApiBaseController
     } )
     public @interface PractiseRockPaperScissorsOperation {}
 
-    protected ResponseEntity<?> practiseRockPaperScissors( RockPaperScissors yourChoice )
+    protected ResponseEntity<?> processPractisingRockPaperScissors( RockPaperScissors yourChoice )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -585,7 +577,7 @@ public class GameApiBaseController
     @Target( ElementType.METHOD )
     @Retention( RetentionPolicy.RUNTIME )
     @Operation(
-        operationId = "2_2",
+        operationId = "3_1",
         summary = "Get the top users from the leaderboard.",
         description = "Returns a list of users sorted by their score in descending order. You can optionally limit the number of users returned using the `limit` query parameter."
     )
@@ -599,7 +591,7 @@ public class GameApiBaseController
     } )
     public @interface GetLeaderboardOperation {}
 
-    public ResponseEntity<?> getLeaderboard( int limit )
+    public ResponseEntity<?> processGettingLeaderboard( int limit )
     {
         List<User> users = userRepository.findAll(
                                 Sort.by(
@@ -632,7 +624,7 @@ public class GameApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
-        operationId = "2_7",
+        operationId = "3_6",
         summary = "Claim bonus points once every 3 hours.",
         description = """
         You can claim +1 bonus point every 3 hours. There is a 50% chance to receive +2 points instead!
@@ -662,7 +654,7 @@ public class GameApiBaseController
     } )
     public @interface ClaimBonusPointOperation {}
 
-    protected ResponseEntity<?> claimBonusPoint()
+    protected ResponseEntity<?> processClaimingBonusPoints()
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
