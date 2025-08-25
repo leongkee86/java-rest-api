@@ -13,23 +13,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
-@RequestMapping( "/api/auth" )
-@Tag( name = "Auth" )
-@Validated
-public class AuthController
+public class AuthApiBaseController
 {
     @Autowired
     private JwtUtil jwtUtil;
@@ -40,7 +37,8 @@ public class AuthController
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping( "/register" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @Operation(
         operationId = "1_1",
         summary = "Registers for a new user account.",
@@ -59,10 +57,9 @@ public class AuthController
             @ApiResponse( responseCode = "200", description = "OK", content = @Content( mediaType = "" ) )
         }
     )
-    public ResponseEntity<?> register(
-        @RequestParam String username,
-        @RequestParam String password
-    )
+    public @interface RegisterOperation {}
+
+    protected ResponseEntity<?> register( String username, String password )
     {
         if (StringHelper.isNullOrEmpty( username ))
         {
@@ -97,7 +94,8 @@ public class AuthController
                 );
     }
 
-    @PostMapping( "/login" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @Operation(
         operationId = "1_2",
         summary = "Log in to an existing user account.",
@@ -124,10 +122,9 @@ public class AuthController
             @ApiResponse( responseCode = "200", description = "Successful login", content = @Content( mediaType = "" ) )
         }
     )
-    public ResponseEntity<?> login(
-        @RequestParam String username,
-        @RequestParam String password
-    )
+    public @interface LoginOperation {}
+
+    protected ResponseEntity<?> login( String username, String password )
     {
         Optional<User> userOpt = userService.findByUsername( username );
 
@@ -163,7 +160,8 @@ public class AuthController
                 );
     }
 
-    @PostMapping( "/logout" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "1_3",
@@ -176,7 +174,9 @@ public class AuthController
             @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) ),
         }
     )
-    public ResponseEntity<?> logout( HttpServletRequest request )
+    public @interface LogoutOperation {}
+
+    protected ResponseEntity<?> logout( HttpServletRequest request )
     {
         String authHeader = request.getHeader( Constants.AUTH_HEADER );
 

@@ -1,6 +1,7 @@
 package com.demo.rest_api.controller;
 
 import com.demo.rest_api.dto.*;
+import com.demo.rest_api.enums.RockPaperScissors;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.repository.UserRepository;
 import com.demo.rest_api.service.AuthenticationService;
@@ -15,25 +16,23 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping( "/api/game" )
-@Tag( name = "Game" )
-@Validated
-public class GameController
+public class GameApiBaseController
 {
     @Autowired
     private UserService userService;
@@ -47,7 +46,8 @@ public class GameController
     @Autowired
     private LeaderboardService leaderboardService;
 
-    @GetMapping( "/profile" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_1",
@@ -65,7 +65,9 @@ public class GameController
             @ApiResponse( responseCode = "404", description = "User not found", content = @Content( mediaType = "" ) )
         }
     )
-    public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
+    public @interface GetProfileOperation {}
+
+    protected ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
     {
         if (username != null && !username.isBlank())
         {
@@ -114,7 +116,8 @@ public class GameController
                 );
     }
 
-    @PostMapping( "/guessNumber" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_3",
@@ -153,13 +156,9 @@ public class GameController
             content = @Content( mediaType = "" )
         )
     } )
-    public ResponseEntity<?> guessNumber(
-        @Parameter(
-            description = "Guess a number from 1 to 100",
-            required = true
-        )
-        @RequestParam( defaultValue = "50" ) int yourGuessedNumber
-    )
+    public @interface GuessNumberOperation {}
+
+    protected ResponseEntity<?> guessNumber( int yourGuessedNumber )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -263,7 +262,8 @@ public class GameController
                 );
     }
 
-    @PostMapping( "/arrangeNumbers" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_4",
@@ -303,7 +303,9 @@ public class GameController
             content = @Content( mediaType = "" )
         )
     } )
-    public ResponseEntity<?> arrangeNumbers(
+    public @interface ArrangeNumbersOperation {}
+
+    protected ResponseEntity<?> arrangeNumbers(
         @Parameter(
             description = "Guess the sequence of the 5 numbers defined by the game for the current round",
             required = true
@@ -407,21 +409,8 @@ public class GameController
                 );
     }
 
-    public enum RockPaperScissors
-    {
-        Rock,
-        Paper,
-        Scissors;
-
-        public boolean beats( RockPaperScissors other )
-        {
-            return ( this == Rock && other == Scissors )
-                    || ( this == Scissors && other == Paper )
-                    || ( this == Paper && other == Rock );
-        }
-    }
-
-    @PostMapping( "/rockPaperScissors/challenge" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_6",
@@ -466,22 +455,9 @@ public class GameController
             content = @Content( mediaType = "" )
         )
     } )
-    public ResponseEntity<?> playRockPaperScissors(
-            @Parameter(
-                description = "The username of the opponent that you choose to challenge"
-            )
-            @RequestParam( required = false ) String opponentUsername,
-            @Parameter(
-                description = "Select your choice",
-                required = true
-            )
-            @RequestParam( defaultValue = "Rock" ) RockPaperScissors yourChoice,
-            @Parameter(
-                description = "The number of points that you want to stake",
-                required = true
-            )
-            @RequestParam( defaultValue = "1" ) int pointsToStake
-    )
+    public @interface PlayRockPaperScissorsOperation {}
+
+    public ResponseEntity<?> playRockPaperScissors( String opponentUsername, RockPaperScissors yourChoice, int pointsToStake )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -605,7 +581,8 @@ public class GameController
                 );
     }
 
-    @PostMapping( "/rockPaperScissors/practise" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_5",
@@ -641,13 +618,9 @@ public class GameController
             content = @Content( mediaType = "" )
         )
     } )
-    public ResponseEntity<?> practiseRockPaperScissors(
-        @Parameter(
-            description = "Select your choice",
-            required = true
-        )
-        @RequestParam( defaultValue = "Rock" ) RockPaperScissors yourChoice
-    )
+    public @interface PractiseRockPaperScissorsOperation {}
+
+    protected ResponseEntity<?> practiseRockPaperScissors( RockPaperScissors yourChoice )
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 
@@ -679,7 +652,8 @@ public class GameController
                 );
     }
 
-    @GetMapping( "/leaderboard" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @Operation(
         operationId = "2_2",
         summary = "Get the top users from the leaderboard.",
@@ -693,7 +667,9 @@ public class GameController
             content = @Content( mediaType = "" )
         )
     } )
-    public ResponseEntity<?> getLeaderboard( @RequestParam( defaultValue = "100" ) int limit )
+    public @interface GetLeaderboardOperation {}
+
+    public ResponseEntity<?> getLeaderboard( int limit )
     {
         List<User> users = userRepository.findAll(
                                 Sort.by(
@@ -722,7 +698,8 @@ public class GameController
                 );
     }
 
-    @PostMapping( "/claimBonusPoints" )
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_7",
@@ -753,7 +730,9 @@ public class GameController
             content = @Content( mediaType = "" )
         )
     } )
-    public ResponseEntity<?> claimBonusPoint()
+    public @interface ClaimBonusPointOperation {}
+
+    protected ResponseEntity<?> claimBonusPoint()
     {
         ResponseEntity<?> authenticatedUserOrError = authenticationService.getAuthenticatedUserOrError();
 

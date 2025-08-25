@@ -1,5 +1,6 @@
 package com.demo.rest_api.config;
 
+import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -74,8 +75,10 @@ public class OpenApiConfig
     {
         return new OpenAPI()
                 .tags( List.of(
-                    new Tag().name( "Auth" ),
-                    new Tag().name( "Game" )
+                    new Tag().name( Constants.AUTH_API_TEST),
+                    new Tag().name( Constants.GAME_API_TEST),
+                    new Tag().name( Constants.AUTH_API),
+                    new Tag().name( Constants.GAME_API)
                 ) )
                 .servers( List.of(
                     new Server().url( "http://localhost:8080" ).description( "" )

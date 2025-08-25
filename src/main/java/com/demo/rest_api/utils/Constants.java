@@ -1,5 +1,7 @@
 package com.demo.rest_api.utils;
 
+import org.springframework.http.MediaType;
+
 public final class Constants
 {
     private Constants()
@@ -13,4 +15,12 @@ public final class Constants
 
     // Message
     public static final String DEFAULT_SUCCESS_MESSAGE = "Request processed successfully.";
+
+    // Tag
+    public static final String QUERY_PARAM_FOR_TESTING_ONLY = "Query Parameters (For testing only)";
+    public static final String APPLICATION_JSON_OR_FORM_URLENCODED = "GET : Query | POST : " + MediaType.APPLICATION_JSON_VALUE + " OR " + MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+    public static final String AUTH_API_TEST = "Auth APIs — " + QUERY_PARAM_FOR_TESTING_ONLY;
+    public static final String AUTH_API = "Auth APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
+    public static final String GAME_API_TEST = "Game APIs — " + QUERY_PARAM_FOR_TESTING_ONLY;
+    public static final String GAME_API = "Game APIs — " + APPLICATION_JSON_OR_FORM_URLENCODED;
 }
