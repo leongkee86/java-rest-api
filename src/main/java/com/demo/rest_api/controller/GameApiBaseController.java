@@ -10,15 +10,16 @@ import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.EnumHelper;
 import com.demo.rest_api.utils.NumberHelper;
+import com.demo.rest_api.utils.PaginationHelper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +36,10 @@ import java.util.stream.Collectors;
 public class GameApiBaseController
 {
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -46,12 +47,21 @@ public class GameApiBaseController
     @Autowired
     private LeaderboardService leaderboardService;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Target( ElementType.METHOD )
     @Retention( RetentionPolicy.RUNTIME )
     @Operation(
         operationId = "3_1",
         summary = "Get the top users from the leaderboard.",
-        description = "Retrieves a list of users sorted by their score in descending order. You can optionally limit the number of users returned using the `limit` query parameter."
+        description = """
+            Retrieves a paginated list of users sorted by their **score** in descending order. When scores are equal, users are secondarily sorted by **attempts** (ascending) and then by **rounds** (ascending).
+            
+            Supports **optional pagination** using the `page` (1-based) and `limit` query parameters to control the page number and the number of results per page.
+            
+            If only `limit` is provided (without `page`), the first `limit` number of users will be returned. For example, `limit=10` returns the top 10 users.
+            """
     )
     @ApiResponses( value =
     {
@@ -59,38 +69,67 @@ public class GameApiBaseController
             responseCode = "200",
             description = "OK",
             content = @Content( mediaType = "" )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = @Content( mediaType = "" )
         )
     } )
     public @interface GetLeaderboardOperation {}
 
-    public ResponseEntity<?> processGettingLeaderboard( Integer limit )
+    public ResponseEntity<?> processGettingLeaderboard( Integer page, Integer limit )
     {
-        List<User> users = userRepository.findAll(
-                    Sort.by(
-                        Sort.Order.desc( Constants.DATABASE_USER_SCORE_KEY ),   // Highest score first.
-                        Sort.Order.asc( Constants.DATABASE_USER_ATTEMPTS_KEY ), // If scores equal, fewer attempts first.
-                        Sort.Order.asc( Constants.DATABASE_USER_ROUNDS_KEY )    // If both equal, lower rounds first.
-                    )
-                )
-                .stream()
-                .limit( ( limit != null ) ? limit : Long.MAX_VALUE )
-                .toList();
+        Query query = new Query();
 
+        query.with(
+            Sort.by(
+                Sort.Order.desc( Constants.DATABASE_USER_SCORE_KEY ),   // Highest score first.
+                Sort.Order.asc( Constants.DATABASE_USER_ATTEMPTS_KEY ), // If scores equal, fewer attempts first.
+                Sort.Order.asc( Constants.DATABASE_USER_ROUNDS_KEY )    // If both equal, lower rounds first.
+            )
+        );
+
+        PaginationHelper.PaginationMetadata paginationMetadata = null;
+
+        if (page != null && limit != null)
+        {
+            long totalMatchedUsers = PaginationHelper.countWithoutPagination( mongoTemplate, query, User.class );
+
+            try
+            {
+                paginationMetadata = PaginationHelper.applyPagination( query, page, limit, totalMatchedUsers );
+            }
+            catch ( IllegalArgumentException exception )
+            {
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.BAD_REQUEST,
+                        exception.toString().replace( "java.lang.IllegalArgumentException: ", "" )
+                );
+            }
+        }
+        else if (limit != null)
+        {
+            query.limit( limit );
+        }
+
+        List<User> users = mongoTemplate.find( query, User.class );
         List<LeaderboardUserResponse> leaderboardUsers = new ArrayList<>();
+        long rankOffset = ( page != null && limit != null ) ? ( long )( page - 1 ) * limit + 1 : 1;
 
         if (!users.isEmpty())
         {
-            long rank = 1;
             for (User user : users)
             {
-                leaderboardUsers.add( new LeaderboardUserResponse( rank, user ) );
-                rank++;
+                leaderboardUsers.add( new LeaderboardUserResponse( rankOffset, user ) );
+                rankOffset++;
             }
         }
 
         Map<String,Object> metadata = new LinkedHashMap<>();
         metadata.put( "totalUsers", userRepository.count() );
-        metadata.put( "matchedCount", leaderboardUsers.size() );
+        metadata.put( "returnedUsers", leaderboardUsers.size() );
+        metadata.put( "pagination", paginationMetadata );
 
         return ServerApiResponse.generateResponseEntity(
                 HttpStatus.OK,

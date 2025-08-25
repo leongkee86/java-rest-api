@@ -51,8 +51,9 @@ public class UserApiController extends UserApiBaseController
             @RequestParam( required = false ) Integer maximumScore,
             @RequestParam( required = false ) String usernameKeyword,
             @Parameter( required = true ) @RequestParam( defaultValue = "Ascending" ) SortDirection sortDirection,
+            @RequestParam( required = false ) Integer page,
             @RequestParam( required = false ) Integer limit )
     {
-        return super.processFilteringAndSorting( minimumScore, maximumScore, usernameKeyword, sortDirection, limit );
+        return super.processFilteringAndSorting( minimumScore, maximumScore, usernameKeyword, sortDirection, page, limit );
     }
 }

@@ -10,6 +10,7 @@ import com.demo.rest_api.service.AuthenticationService;
 import com.demo.rest_api.service.LeaderboardService;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
+import com.demo.rest_api.utils.PaginationHelper;
 import com.demo.rest_api.utils.StringHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,10 +35,10 @@ import java.util.regex.Pattern;
 public class UserApiBaseController
 {
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -250,8 +251,14 @@ public class UserApiBaseController
     @Retention( RetentionPolicy.RUNTIME )
     @Operation(
         operationId = "2_5",
-        summary = "Get a filtered and sorted list of users.",
-        description = "Retrieves a list of users filtered using **optional** parameters for minimum score (`minimumScore`), maximum score (`maximumScore`), username keyword matching (`keyword`), and result limit (`limit`), and sorted in ascending or descending order based on the `sortDirection` parameter."
+        summary = "Get a filtered, sorted, and paginated list of users.",
+        description = """
+            Retrieves a paginated list of users filtered using **optional** parameters: minimum score (`minimumScore`), maximum score (`maximumScore`), and case-insensitive **username** keyword matching (`usernameKeyword`). Results are sorted in ascending or descending order based on the **required** `sortDirection` parameter.
+            
+            Supports **optional pagination** using the `page` (1-based) and `limit` query parameters to control the page number and the number of results per page.
+            
+            If only `limit` is provided (without `page`), the first `limit` number of filtered users will be returned. For example, `limit=10` returns the first 10 filtered users.
+            """
     )
     @ApiResponses( value =
     {
@@ -259,11 +266,18 @@ public class UserApiBaseController
             responseCode = "200",
             description = "OK",
             content = @Content( mediaType = "" )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = @Content( mediaType = "" )
         )
     } )
     public @interface FilterAndSortOperation {}
 
-    public ResponseEntity<?> processFilteringAndSorting( Integer minimumScore, Integer maximumScore, String usernameKeyword, SortDirection sortDirection, Integer limit )
+    public ResponseEntity<?> processFilteringAndSorting(
+        Integer minimumScore, Integer maximumScore, String usernameKeyword, SortDirection sortDirection,
+        Integer page, Integer limit )
     {
         Query query = new Query();
 
@@ -291,7 +305,25 @@ public class UserApiBaseController
         Sort.Direction direction = sortDirection.toSpringSort();
         query.with( Sort.by( direction, Constants.DATABASE_USER_SCORE_KEY ) );
 
-        if (limit != null)
+        PaginationHelper.PaginationMetadata paginationMetadata = null;
+
+        if (page != null && limit != null)
+        {
+            long totalMatchedUsers = PaginationHelper.countWithoutPagination( mongoTemplate, query, User.class );
+
+            try
+            {
+                paginationMetadata = PaginationHelper.applyPagination( query, page, limit, totalMatchedUsers );
+            }
+            catch ( IllegalArgumentException exception )
+            {
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.BAD_REQUEST,
+                        exception.toString().replace( "java.lang.IllegalArgumentException: ", "" )
+                );
+            }
+        }
+        else if (limit != null)
         {
             query.limit( limit );
         }
@@ -309,7 +341,8 @@ public class UserApiBaseController
 
         Map<String,Object> metadata = new LinkedHashMap<>();
         metadata.put( "totalUsers", userRepository.count() );
-        metadata.put( "matchedCount", responseUsers.size() );
+        metadata.put( "returnedUsers", responseUsers.size() );
+        metadata.put( "pagination", paginationMetadata );
 
         return ServerApiResponse.generateResponseEntity(
                 HttpStatus.OK,

@@ -82,9 +82,12 @@ public class GameTestApiController extends GameApiBaseController
 
     @GetMapping( "/leaderboard" )
     @GetLeaderboardOperation
-    public ResponseEntity<?> getLeaderboard( @RequestParam( required = false ) Integer limit )
+    public ResponseEntity<?> getLeaderboard(
+        @RequestParam( required = false ) Integer page,
+        @RequestParam( required = false ) Integer limit
+    )
     {
-        return super.processGettingLeaderboard( limit );
+        return super.processGettingLeaderboard( page, limit );
     }
 
     @PostMapping( "/claimBonusPoints" )
