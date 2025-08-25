@@ -41,6 +41,7 @@ window.onload = function()
                 let isSuccessful = false;
                 const loginApiPath = "/auth/login";
                 const logoutApiPath = "/auth/logout";
+                const deleteAccountPath = "user/deleteAccount";
 
                 const responseUrl = new URL( response.url );
 
@@ -70,7 +71,8 @@ window.onload = function()
                             }
                         }
                     }
-                    else if (responseUrl.pathname.includes( logoutApiPath ))
+                    else if (responseUrl.pathname.includes( logoutApiPath )
+                            || responseUrl.pathname.includes( deleteAccountPath ))
                     {
                         if (token)
                         {
@@ -82,7 +84,15 @@ window.onload = function()
 
                             setTimeout( () =>
                             {
-                                alert( "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue." );
+                                if (responseUrl.pathname.includes( logoutApiPath ))
+                                {
+                                    alert( "You have been successfully logged out. You are no longer authorized to access protected API endpoints. Please log in again to continue." );
+                                }
+                                else if (responseUrl.pathname.includes( deleteAccountPath ))
+                                {
+                                    alert( "Your account has been successfully deleted. You are no longer authorized to access protected API endpoints." );
+                                }
+
                                 location.reload();
                             }
                             , 100 );
@@ -120,6 +130,10 @@ window.onload = function()
                     else if (responseUrl.pathname.includes( logoutApiPath ))
                     {
                         alert( "Logout failed. Please make sure you are logged in and try again." );
+                    }
+                    else if (responseUrl.pathname.includes( deleteAccountPath ))
+                    {
+                        alert( "Account deletion failed. Please make sure you are logged in and try again." );
                     }
                 }
 
