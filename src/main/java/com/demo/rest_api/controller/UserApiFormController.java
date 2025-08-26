@@ -6,24 +6,41 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping( "/api/test/user" )
-@Tag( name = Constants.USER_API_TEST )
+@RequestMapping( "/api/user" + Constants.API_PATH_SUFFIX_FOR_FORM_URLENCODED )
+@Tag( name = Constants.USER_API_FORM)
 @Validated
-public class UserTestApiController extends UserApiBaseController
+public class UserApiFormController extends UserApiBaseController
 {
-    @GetMapping( "/profile" )
-    @GetProfileOperation
-    public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
+    @GetMapping(
+        value = "/profile",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @GetOwnProfileOperation
+    public ResponseEntity<?> getProfile()
+    {
+        return super.processGettingProfile();
+    }
+
+    @GetMapping(
+        value = "/profile/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @GetUserProfileOperation
+    public ResponseEntity<?> getProfileByUsername( @PathVariable( "username" ) String username )
     {
         return super.processGettingProfile( username );
     }
 
-    @PutMapping( "/changeDisplayName" )
+    @PutMapping(
+        value = "/changeDisplayName",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ChangeDisplayNameOperation
     public ResponseEntity<?> changeDisplayName(
         @RequestParam @NotBlank @Size(
@@ -36,7 +53,10 @@ public class UserTestApiController extends UserApiBaseController
         return super.processChangingDisplayName( displayName );
     }
 
-    @PutMapping( "/changePassword" )
+    @PutMapping(
+        value = "/changePassword",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ChangePasswordOperation
     public ResponseEntity<?> changePassword(
         @RequestParam @NotBlank @Size(
@@ -49,14 +69,20 @@ public class UserTestApiController extends UserApiBaseController
         return super.processChangingPassword( password );
     }
 
-    @DeleteMapping( "/deleteAccount" )
+    @DeleteMapping(
+        value = "/deleteAccount",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @DeleteAccountOperation
     public ResponseEntity<?> deleteAccount()
     {
         return super.processDeletingAccount();
     }
 
-    @GetMapping( "/filterAndSort" )
+    @GetMapping(
+        value = "/filterAndSort",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @FilterAndSortOperation
     public ResponseEntity<?> filterAndSort(
         @RequestParam( required = false ) Integer minimumScore,

@@ -54,31 +54,51 @@ public class UserApiBaseController
     @SecurityRequirement( name = "bearerAuth" )
     @Operation(
         operationId = "2_1",
-        summary = "View a user's game profile",
+        summary = "View your own game profile.",
         description = """
-        View **your own game profile** (requires Bearer token) by omitting the `username` parameter.
-        
-        View **another user's game profile** by providing their `username` (no authentication required).
-        """
+            View the information of your own game profile.
+            """
     )
     @ApiResponses( value =
         {
             @ApiResponse( responseCode = "200", description = "Game profile retrieved successfully", content = @Content( mediaType = "" ) ),
-            @ApiResponse( responseCode = "401", description = "Unauthorized — required if viewing your own game profile", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) ),
             @ApiResponse( responseCode = "404", description = "User not found", content = @Content( mediaType = "" ) )
         }
     )
-    public @interface GetProfileOperation {}
+    public @interface GetOwnProfileOperation {}
+
+    protected ResponseEntity<?> processGettingProfile()
+    {
+        return processGettingProfile( null );
+    }
+
+    @Target( ElementType.METHOD )
+    @Retention( RetentionPolicy.RUNTIME )
+    @Operation(
+        operationId = "2_1",
+        summary = "View a specific user's game profile.",
+        description = """
+            View the information of a specific user's game profile by providing their `username`.
+            """
+    )
+    @ApiResponses( value =
+        {
+            @ApiResponse( responseCode = "200", description = "Game profile retrieved successfully", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "404", description = "User not found", content = @Content( mediaType = "" ) )
+        }
+    )
+    public @interface GetUserProfileOperation {}
 
     protected ResponseEntity<?> processGettingProfile( String username )
     {
-        if (username != null && !username.isBlank())
+        if (StringHelper.isBlank( username ))
         {
-            return getUserProfile( username );
+            return getOwnProfile();
         }
         else
         {
-            return getOwnProfile();
+            return getUserProfile( username );
         }
     }
 

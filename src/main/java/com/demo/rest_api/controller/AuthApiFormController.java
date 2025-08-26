@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,12 +14,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping( "/api/test/auth" )
-@Tag( name = Constants.AUTH_API_TEST )
+@RequestMapping( "/api/auth" + Constants.API_PATH_SUFFIX_FOR_FORM_URLENCODED )
+@Tag( name = Constants.AUTH_API_FORM)
 @Validated
-public class AuthTestApiController extends AuthApiBaseController
+public class AuthApiFormController extends AuthApiBaseController
 {
-    @PostMapping( value = "/register" )
+    @PostMapping(
+        value = "/register",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @RegisterOperation
     public ResponseEntity<?> register(
         @RequestParam @NotBlank @Size(
@@ -40,7 +44,10 @@ public class AuthTestApiController extends AuthApiBaseController
         return super.processRegistration( username, password, displayName );
     }
 
-    @PostMapping( value = "/login" )
+    @PostMapping(
+        value = "/login",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @LoginOperation
     public ResponseEntity<?> login(
         @RequestParam String username,
@@ -50,7 +57,10 @@ public class AuthTestApiController extends AuthApiBaseController
         return super.processLogin( username, password );
     }
 
-    @PostMapping( "/logout" )
+    @PostMapping(
+        value = "/logout",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @LogoutOperation
     protected ResponseEntity<?> logout( HttpServletRequest request )
     {

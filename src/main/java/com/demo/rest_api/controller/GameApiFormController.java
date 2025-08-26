@@ -5,6 +5,7 @@ import com.demo.rest_api.utils.Constants;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping( "/api/test/game" )
-@Tag( name = Constants.GAME_API_TEST )
+@RequestMapping( "/api/game" + Constants.API_PATH_SUFFIX_FOR_FORM_URLENCODED )
+@Tag( name = Constants.GAME_API_FORM)
 @Validated
-public class GameTestApiController extends GameApiBaseController
+public class GameApiFormController extends GameApiBaseController
 {
-    @PostMapping( "/guessNumber" )
+    @PostMapping(
+        value = "/guessNumber",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @GuessNumberOperation
     public ResponseEntity<?> guessNumber(
         @Parameter(
@@ -30,7 +34,10 @@ public class GameTestApiController extends GameApiBaseController
         return super.processGuessingNumber( yourGuessedNumber );
     }
 
-    @PostMapping( "/arrangeNumbers" )
+    @PostMapping(
+        value = "/arrangeNumbers",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ArrangeNumbersOperation
     public ResponseEntity<?> arrangeNumbers(
         @Parameter(
@@ -45,7 +52,10 @@ public class GameTestApiController extends GameApiBaseController
         return super.processArrangingNumbers( yourArrangedNumbers );
     }
 
-    @PostMapping( "/rockPaperScissors/challenge" )
+    @PostMapping(
+        value = "/rockPaperScissors/challenge",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @PlayRockPaperScissorsOperation
     public ResponseEntity<?> playRockPaperScissors(
         @Parameter(
@@ -67,7 +77,10 @@ public class GameTestApiController extends GameApiBaseController
         return super.processPlayingRockPaperScissors( opponentUsername, yourChoice, pointsToStake );
     }
 
-    @PostMapping( "/rockPaperScissors/practise" )
+    @PostMapping(
+        value = "/rockPaperScissors/practise",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @PractiseRockPaperScissorsOperation
     public ResponseEntity<?> practiseRockPaperScissors(
         @Parameter(
@@ -80,7 +93,10 @@ public class GameTestApiController extends GameApiBaseController
         return super.processPractisingRockPaperScissors( yourChoice );
     }
 
-    @GetMapping( "/leaderboard" )
+    @GetMapping(
+        value = "/leaderboard",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @GetLeaderboardOperation
     public ResponseEntity<?> getLeaderboard(
         @RequestParam( required = false ) Integer page,
@@ -90,7 +106,10 @@ public class GameTestApiController extends GameApiBaseController
         return super.processGettingLeaderboard( page, limit );
     }
 
-    @PostMapping( "/claimBonusPoints" )
+    @PostMapping(
+        value = "/claimBonusPoints",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ClaimBonusPointOperation
     public ResponseEntity<?> claimBonusPoints()
     {

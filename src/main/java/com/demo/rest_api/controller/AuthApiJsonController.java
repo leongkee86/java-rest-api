@@ -12,25 +12,37 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping( "/api/auth" )
-@Tag( name = Constants.AUTH_API )
+@Tag( name = Constants.AUTH_API_JSON)
 @Validated
-public class AuthApiController extends AuthApiBaseController
+public class AuthApiJsonController extends AuthApiBaseController
 {
-    @PostMapping( value = "/register", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
+    @PostMapping(
+        value = "/register",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @RegisterOperation
     public ResponseEntity<?> register( @RequestBody RegisterRequest request )
     {
         return super.processRegistration( request.getUsername(), request.getPassword(), request.getDisplayName() );
     }
 
-    @PostMapping( value = "/login", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
+    @PostMapping(
+        value = "/login",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @LoginOperation
     public ResponseEntity<?> login( @RequestBody LoginRequest request )
     {
         return super.processLogin( request.getUsername(), request.getPassword() );
     }
 
-    @PostMapping( "/logout" )
+    @PostMapping(
+        value = "/logout",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @LogoutOperation
     protected ResponseEntity<?> logout( HttpServletRequest request )
     {

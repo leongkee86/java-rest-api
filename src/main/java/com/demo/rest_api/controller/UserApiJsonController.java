@@ -13,39 +13,66 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping( "/api/user" )
-@Tag( name = Constants.USER_API )
+@Tag( name = Constants.USER_API_JSON)
 @Validated
-public class UserApiController extends UserApiBaseController
+public class UserApiJsonController extends UserApiBaseController
 {
-    @GetMapping( "/profile" )
-    @UserApiBaseController.GetProfileOperation
-    public ResponseEntity<?> getProfile( @RequestParam( required = false ) String username )
+    @GetMapping(
+        value = "/profile",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @GetOwnProfileOperation
+    public ResponseEntity<?> getProfile()
+    {
+        return super.processGettingProfile();
+    }
+
+    @GetMapping(
+        value = "/profile/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @GetUserProfileOperation
+    public ResponseEntity<?> getProfileByUsername( @PathVariable( "username" ) String username )
     {
         return super.processGettingProfile( username );
     }
 
-    @PutMapping( value = "/changeDisplayName", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
+    @PutMapping(
+        value = "/changeDisplayName",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ChangeDisplayNameOperation
     public ResponseEntity<?> changeDisplayName( @RequestBody ChangeDisplayNameRequest request )
     {
         return super.processChangingDisplayName( request.getDisplayName() );
     }
 
-    @PutMapping( value = "/changePassword", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE } )
+    @PutMapping(
+        value = "/changePassword",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ChangePasswordOperation
     public ResponseEntity<?> changePassword( @RequestBody ChangePasswordRequest request )
     {
         return super.processChangingPassword( request.getPassword() );
     }
 
-    @DeleteMapping( "/deleteAccount" )
+    @DeleteMapping(
+        value = "/deleteAccount",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @DeleteAccountOperation
     public ResponseEntity<?> deleteAccount()
     {
         return super.processDeletingAccount();
     }
 
-    @GetMapping( "/filterAndSort" )
+    @GetMapping(
+        value = "/filterAndSort",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @FilterAndSortOperation
     public ResponseEntity<?> filterAndSort(
             @RequestParam( required = false ) Integer minimumScore,

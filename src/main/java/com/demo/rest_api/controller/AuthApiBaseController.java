@@ -52,7 +52,8 @@ public class AuthApiBaseController
     )
     @ApiResponses( value =
         {
-            @ApiResponse( responseCode = "200", description = "OK", content = @Content( mediaType = "" ) )
+            @ApiResponse( responseCode = "200", description = "Successful registration", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "400", description = "Invalid input", content = @Content( mediaType = "" ) )
         }
     )
     public @interface RegisterOperation {}
@@ -133,7 +134,8 @@ public class AuthApiBaseController
     )
     @ApiResponses( value =
         {
-            @ApiResponse( responseCode = "200", description = "Successful login", content = @Content( mediaType = "" ) )
+            @ApiResponse( responseCode = "200", description = "Successful login", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "400", description = "Invalid input", content = @Content( mediaType = "" ) )
         }
     )
     public @interface LoginOperation {}
@@ -186,6 +188,7 @@ public class AuthApiBaseController
         {
             @ApiResponse( responseCode = "200", description = "Successful logout", content = @Content( mediaType = "" ) ),
             @ApiResponse( responseCode = "401", description = "Unauthorized — invalid or missing token", content = @Content( mediaType = "" ) ),
+            @ApiResponse( responseCode = "404", description = "User not found", content = @Content( mediaType = "" ) )
         }
     )
     public @interface LogoutOperation {}

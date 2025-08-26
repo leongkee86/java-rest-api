@@ -5,6 +5,7 @@ import com.demo.rest_api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,8 @@ public class AuthenticationService
         // in the SecurityContext via the doFilterInternal() method.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated())
+        // Check if the authentication object is null or an anonymous user (no actual authentication).
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
         {
             return ServerApiResponse.generateResponseEntity(
                     HttpStatus.UNAUTHORIZED,
@@ -38,7 +40,7 @@ public class AuthenticationService
         {
             return ServerApiResponse.generateResponseEntity(
                     HttpStatus.NOT_FOUND,
-                    "Please use the 'api/auth/login' endpoint to log in first."
+                    "The user associated with the current session token was not found. Please use the 'api/auth/login' endpoint to log in again."
             );
         }
 
