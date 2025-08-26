@@ -147,7 +147,7 @@ window.onload = function()
                     if (navigator.onLine)
                     {
                         // fetch( "http://localhost:8080/api/game/profile",
-                        fetch( "https://leongkee-java-rest-api.onrender.com/api/game/profile",
+                        fetch( "https://leongkee-java-rest-api.onrender.com/api/user/profile",
                             {
                                 method: 'GET',
                                 headers:
