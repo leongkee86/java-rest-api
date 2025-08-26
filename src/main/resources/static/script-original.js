@@ -39,9 +39,9 @@ window.onload = function()
                 }
 
                 let isSuccessful = false;
-                const loginApiPath = "/auth/login";
-                const logoutApiPath = "/auth/logout";
-                const deleteAccountPath = "user/deleteAccount";
+                const loginApiPath = "/login";
+                const logoutApiPath = "/logout";
+                const deleteAccountPath = "/deleteAccount";
 
                 const responseUrl = new URL( response.url );
 
