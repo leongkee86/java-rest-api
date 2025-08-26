@@ -292,15 +292,13 @@ public class GameApiBaseController
         operationId = "3_3",
         summary = "Guess the sequence of 5 numbers in this game. Use this endpoint to start a new round or continue the current round to play.",
         description = """
-            Guess and enter the sequence of the 5 numbers (1, 2, 3, 4, 5) in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers (For example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result of the game.
+            Guess and enter the sequence of the 5 valid numbers **1, 2, 3, 4, and 5** in the `yourGuessedNumber` field. The sequence can be any arrangement of these numbers **without repetition** (for example: 4, 3, 5, 1, 2). Then, press the **Execute** button and see the result of the game.
             
             ### Hints you will receive after each wrong guess:
-            - **[X]**: Number X is at the correct position.
-            - **-X-**: Number X is at the wrong position.
-            - **?X?**: Number X is invalid. Valid numbers are only 1, 2, 3, 4, 5.
-            - **#X#**: Number X is duplicated.
+            - **[X]**: Number X is in the **correct** position.
+            - **-X-**: Number X is in the **wrong** position.
             
-            > Your goal is to enter the 5 numbers in the sequence defined by the game for the current round to complete the round. Completing a round awards you +2 points.
+            > Your goal is to enter the 5 valid numbers without repetition in the sequence defined by the game for the current round to complete the round. Completing a round awards you +2 points.
             """
     )
     @ApiResponses( value =
@@ -341,8 +339,31 @@ public class GameApiBaseController
         {
             return ServerApiResponse.generateResponseEntity(
                     HttpStatus.BAD_REQUEST,
-                    "Please enter the sequence of the 5 numbers (1, 2, 3, 4, 5) defined by the game for the current round in the 'yourGuessedNumber' field. The sequence can be any arrangement of these numbers."
+                    "Please enter the sequence of the 5 valid numbers 1, 2, 3, 4, and 5 defined by the game for the current round in the 'yourGuessedNumber' field. The sequence can be any arrangement of these numbers."
                     );
+        }
+
+        List<Integer> checkedNumbers = new ArrayList<Integer>();
+
+        for (int number : yourArrangedNumbers)
+        {
+            if (number < 1 || number > 5)
+            {
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.BAD_REQUEST,
+                        "Only the numbers 1, 2, 3, 4, and 5 are allowed in the 'yourArrangedNumbers' field."
+                );
+            }
+
+            if (checkedNumbers.contains( number ))
+            {
+                return ServerApiResponse.generateResponseEntity(
+                        HttpStatus.BAD_REQUEST,
+                        "The number " + number + " is not allowed to appear more than once in the 'yourArrangedNumbers' field."
+                );
+            }
+
+            checkedNumbers.add( number );
         }
 
         if (!user.getHasArrangeNumbersStarted())
@@ -367,7 +388,6 @@ public class GameApiBaseController
         int[] arrangedNumbers = user.getArrangedNumbers();
         StringBuilder hint = new StringBuilder();
 
-        List<Integer> checkedNumbers = new ArrayList<Integer>();
         int correctCount = 0;
 
         for (int i = 0; i < yourArrangedNumbers.size(); i++)
@@ -384,20 +404,10 @@ public class GameApiBaseController
                 correctCount++;
                 hint.append( "[" ).append( number ).append( "]" );
             }
-            else if (number < 1 || number > 5)
-            {
-                hint.append( "?" ).append( number ).append( "?" );
-            }
-            else if (checkedNumbers.contains( number ))
-            {
-                hint.append( "#" ).append( number ).append( "#" );
-            }
             else
             {
                 hint.append( "-" ).append( number ).append( "-" );
             }
-
-            checkedNumbers.add( number );
         }
 
         if (correctCount < 5)
@@ -406,7 +416,7 @@ public class GameApiBaseController
 
             return ServerApiResponse.generateResponseEntity(
                     HttpStatus.OK,
-                    roundNumberString + "Here is the hint to help you figure out the sequence of the 5 numbers: " + hint + ". Use this endpoint to try again.",
+                    roundNumberString + "Here is the hint to help you figure out the sequence of the 5 numbers: " + hint + ". [X] = Correct position. -X- = Wrong position. Use this endpoint to try again.",
                     new UserResponse( user )
                     );
         }
