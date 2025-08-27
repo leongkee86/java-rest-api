@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: RestApiApplication.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ *
+ * Description:
+ * This is the main entry point for the Spring Boot application.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api;
 
 import io.github.cdimascio.dotenv.Dotenv;

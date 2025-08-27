@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: ChangePasswordRequest.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This class represents the request body in an API request for changing the
+ * user's password.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.dto;
 
 import com.demo.rest_api.utils.Constants;

@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: User.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This class represents a User entity and is mapped to a MongoDB collection
+ * called "user". It stores various properties related to the user's profile.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

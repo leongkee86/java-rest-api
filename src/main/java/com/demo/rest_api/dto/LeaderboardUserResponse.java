@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: LeaderboardUserResponse.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ * 
+ * Description:
+ * This class represents a response containing user data for the leaderboard.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.dto;
 
 import com.demo.rest_api.model.User;

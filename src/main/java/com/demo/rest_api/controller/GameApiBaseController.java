@@ -1,3 +1,18 @@
+/*
+ * ****************************************************************************
+ * File: GameApiBaseController
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ * 
+ * Description:
+ * This class implements the core logic for game-related API operations. It
+ * provides reusable methods that extending classes can expose as REST API
+ * endpoints. It integrates with Swagger UI using annotations to automatically
+ * generate API documentation.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.controller;
 
 import com.demo.rest_api.dto.*;

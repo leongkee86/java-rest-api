@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: ServerApiResponse.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 23 August 2025
+ * 
+ * Description:
+ * This class represents a standardized response structure for API responses.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

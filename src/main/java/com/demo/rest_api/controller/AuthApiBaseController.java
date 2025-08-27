@@ -1,9 +1,24 @@
+/*
+ * ****************************************************************************
+ * File: AuthApiBaseController.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ * 
+ * Description:
+ * This class implements the core logic for authentication-related API
+ * operations. It provides reusable methods that extending classes can expose
+ * as REST API endpoints. It integrates with Swagger UI using annotations to
+ * automatically generate API documentation.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.controller;
 
 import com.demo.rest_api.dto.UserResponse;
 import com.demo.rest_api.model.User;
 import com.demo.rest_api.dto.ServerApiResponse;
-import com.demo.rest_api.security.JwtUtil;
+import com.demo.rest_api.security.JwtAuthenticator;
 import com.demo.rest_api.service.UserService;
 import com.demo.rest_api.utils.Constants;
 import com.demo.rest_api.utils.StringHelper;
@@ -28,7 +43,7 @@ import java.util.Optional;
 public class AuthApiBaseController
 {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtAuthenticator jwtAuthenticator;
 
     @Autowired
     private UserService userService;
@@ -163,7 +178,7 @@ public class AuthApiBaseController
         }
 
         // Generate a JWT token using the user's username as the subject.
-        String token = jwtUtil.generateToken( user.getUsername() );
+        String token = jwtAuthenticator.generateToken( user.getUsername() );
 
         Map<String,Object> data = new LinkedHashMap<>();
         data.put( "token", token );

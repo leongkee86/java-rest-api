@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: JwtUtil.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 24 August 2025
+ * 
+ * Description:
+ * This class provides functionality for working with JSON Web Tokens (JWTs).
+ * It includes methods for generating and validating JWTs.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.security;
 
 import io.jsonwebtoken.JwtException;
@@ -10,7 +23,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-public class JwtUtil
+public class JwtAuthenticator
 {
     @Autowired
     private SecretKey jwtSecretKey;

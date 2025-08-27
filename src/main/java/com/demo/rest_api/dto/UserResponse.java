@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: UserResponse.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This class is used to represent a response containing user data in a
+ * simplified form for serialization purposes in APIs.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.dto;
 
 import com.demo.rest_api.model.User;

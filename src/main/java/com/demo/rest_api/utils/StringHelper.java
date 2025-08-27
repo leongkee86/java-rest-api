@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: StringHelper.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 24 August 2025
+ *
+ * Description:
+ * This class provides a set of helper methods for working with strings.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.utils;
 
 import java.util.Arrays;

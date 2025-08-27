@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: PaginationHelper.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 26 August 2025
+ *
+ * Description:
+ * This class provides a set of helper methods for handling pagination in
+ * MongoDB queries.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.utils;
 
 import org.springframework.data.mongodb.core.MongoTemplate;

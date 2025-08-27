@@ -1,3 +1,17 @@
+/*
+ * ****************************************************************************
+ * File: UserService.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This service class implements the UserDetailsService interface for handling
+ * user authentication and management. It interacts with a MongoDB database via
+ * MongoTemplate and a UserRepository to perform CRUD operations on user data.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.service;
 
 import com.demo.rest_api.model.User;

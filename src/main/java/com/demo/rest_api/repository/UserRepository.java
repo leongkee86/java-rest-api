@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: UserRepository.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This interface provides CRUD operations for the User entity, extending
+ * MongoRepository to work with MongoDB.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.repository;
 
 import com.demo.rest_api.model.User;

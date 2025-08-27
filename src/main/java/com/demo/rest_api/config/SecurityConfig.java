@@ -1,3 +1,20 @@
+/*
+ * ****************************************************************************
+ * File: SecurityConfig.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 24 August 2025
+ * 
+ * Description:
+ * This class configures application security with Spring Security by disabling
+ * CSRF, enabling CORS with configurable allowed origins, and enforcing
+ * stateless JWT-based authentication. Configurable public URLs are open to
+ * everyone, while other requests require JWT authentication when login is
+ * needed. The JwtFilter is added to validate tokens before requests are
+ * processed.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.config;
 
 import com.demo.rest_api.security.JwtFilter;
@@ -62,11 +79,5 @@ public class SecurityConfig
         source.registerCorsConfiguration( "/**", config );
 
         return source;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder()
-    {
-        return new BCryptPasswordEncoder();
     }
 }

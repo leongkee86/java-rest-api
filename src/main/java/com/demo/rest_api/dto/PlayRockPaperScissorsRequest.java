@@ -1,3 +1,16 @@
+/*
+ * ****************************************************************************
+ * File: PlayRockPaperScissorsRequest.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This class represents a request body in an API request for playing a
+ * challenge session of the Rock-Paper-Scissors game.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.dto;
 
 import com.demo.rest_api.enums.RockPaperScissors;

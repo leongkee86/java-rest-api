@@ -1,3 +1,19 @@
+/*
+ * ****************************************************************************
+ * File: LeaderboardService.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 25 August 2025
+ * 
+ * Description:
+ * This service class provides functionality for interacting with the
+ * leaderboard data. It calculates a user's rank based on their score, number
+ * of attempts, and rounds played. It utilizes MongoTemplate for querying the
+ * MongoDB database and determines the rank by comparing the user's performance
+ * with other users in the database.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.service;
 
 import com.demo.rest_api.model.User;

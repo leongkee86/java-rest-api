@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: Constants.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ *
+ * Description:
+ * This class holds constant values used throughout the application.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.utils;
 
 import org.springframework.http.MediaType;
@@ -6,7 +18,7 @@ public final class Constants
 {
     private Constants()
     {
-        // private constructor to prevent instantiation
+        // Private constructor to prevent instantiation.
     }
 
     // Configuration

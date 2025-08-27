@@ -1,3 +1,19 @@
+/*
+ * ****************************************************************************
+ * File: AuthenticationService.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ * 
+ * Description:
+ * This service class handles user authentication logic in a Spring-based
+ * application. It is responsible for retrieving the authenticated user's
+ * information from the SecurityContext and checking if the user is valid and
+ * logged in. It interacts with the UserService to fetch user details based on
+ * the username from the JWT token.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.service;
 
 import com.demo.rest_api.dto.ServerApiResponse;

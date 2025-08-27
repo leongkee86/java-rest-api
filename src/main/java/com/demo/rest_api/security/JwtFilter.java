@@ -1,3 +1,20 @@
+/*
+ * ****************************************************************************
+ * File: JwtFilter.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 
+ * 
+ * Description:
+ * This class intercepts incoming HTTP requests to perform JWT-based
+ * authentication. It extracts the JWT token from the Authorization header,
+ * validates it, and if valid, loads the corresponding user details. The
+ * authenticated user is then stored in the Spring SecurityContext, enabling
+ * access to secured endpoints. If validation fails, the response is returned
+ * with a 401 Unauthorized status.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.security;
 
 import com.demo.rest_api.utils.Constants;
@@ -20,7 +37,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter
 {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtAuthenticator jwtAuthenticator;
 
     @Autowired
     private UserService userService;
@@ -41,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter
             try
             {
                 // Validate the JWT token and return its subject (username).
-                String username = jwtUtil.validateToken( token );
+                String username = jwtAuthenticator.validateToken( token );
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
                 {

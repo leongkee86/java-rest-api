@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: OpenApiConfig.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ * 
+ * Description:
+ * This class defines the Swagger documentation settings for the application.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.config;
 
 import com.demo.rest_api.utils.Constants;

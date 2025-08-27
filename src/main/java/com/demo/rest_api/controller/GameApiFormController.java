@@ -1,3 +1,19 @@
+/*
+ * ****************************************************************************
+ * File: GameApiFormController.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 27 August 2025
+ * 
+ * Description:
+ * This class provides REST API endpoints that use query and form parameters in
+ * API requests for game-related API operations. It extends the
+ * GameApiBaseController class to reuse core logic for API operations. It
+ * integrates with Swagger UI using annotations to automatically generate API
+ * documentation.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.controller;
 
 import com.demo.rest_api.enums.RockPaperScissors;

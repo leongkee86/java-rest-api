@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: NumberHelper.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 24 August 2025
+ *
+ * Description:
+ * This class provides a set of helper methods for working with numbers.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.utils;
 
 import java.util.ArrayList;
@@ -10,6 +22,14 @@ public class NumberHelper
 {
     private static final Random RANDOM = new Random();
 
+    /**
+     * Generates a random number between the specified minimum and maximum values (inclusive).
+     *
+     * @param min The minimum value (inclusive) of the range.
+     * @param max The maximum value (inclusive) of the range.
+     * @return A random integer between the specified min and max, inclusive.
+     * @throws IllegalArgumentException If the min value is greater than the max value.
+     */
     public static int getRandomNumber( int min, int max )
     {
         if (min > max)

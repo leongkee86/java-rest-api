@@ -1,3 +1,15 @@
+/*
+ * ****************************************************************************
+ * File: JwtConfig.java
+ * Author: Lim Leong Kee
+ * Email: leongkee86@gmail.com
+ * Last Modified Date: 24 August 2025
+ * 
+ * Description:
+ * This class defines the JWT configuration for the application.
+ * ****************************************************************************
+ */
+
 package com.demo.rest_api.config;
 
 import io.jsonwebtoken.security.Keys;
